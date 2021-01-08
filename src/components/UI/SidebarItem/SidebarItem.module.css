@@ -1,0 +1,19 @@
+.contactName {
+    display: flex;
+    align-items: center;
+    color: #009578;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: .8rem 1rem;
+    border-bottom: .2rem solid #ececec;
+    cursor: pointer;
+}
+
+.contactName:active {
+    color: #02624f;
+    transform: scale(0.98);
+}
+
+.contactName:hover {
+    background: #eeeeee;
+}
