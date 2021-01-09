@@ -8,7 +8,9 @@ export const sidebarItem=(props)=> {
 //css modules are used for styling
 
         return (
-                    <div className={classes.contactName}>
+                    <div className={classes.contactName} 
+                         onClick={()=>props.selectChat(props.index)}
+                                                                        >
                          {props.contactName} 
 		    </div>
         )

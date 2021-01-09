@@ -1,8 +1,11 @@
+.chatComponent{
+    display: flex;
+}
+
 .sidebar{
     border-top: .2rem solid #ececec ;
     width: 30%;
     display: inline-block;
-
 }
 
 .messagingSection{

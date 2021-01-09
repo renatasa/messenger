@@ -1,0 +1,21 @@
+.chattingButton{
+    margin-left: 1rem;
+    height: 2rem;
+    width: 2rem;
+    background-color: #ffffff;
+    color: #009578;
+    border: .2rem solid #009578;
+    border-radius: 50%; 
+    font-size: 1.5rem ;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+}
+
+.chattingButton:hover{
+    background-color:  #eeeeee;
+}
+
+.chattingButton:active{
+    transform: scale(0.98);
+}
