@@ -15,7 +15,7 @@ export const inputField=(props)=> {
                             placeholder="type your message here..." 
                             onChange={props.inputChangedHandler}
                             />
-                    <ChattingButton/>
+                    <ChattingButton sendMessage={props.sendMessage}/>
             </div>
                         
         )

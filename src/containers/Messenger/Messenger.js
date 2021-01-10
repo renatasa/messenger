@@ -9,6 +9,8 @@ export class Messenger extends Component {
   // by default, when first loads, 
   // messenger displays first chat (received from backend data array) in Messaging section  
   // therefore selectedChat by default is 0
+  // newMessage - this is text that user types in input field
+
   state={
         data: [],
         selectedChat: 0, 
@@ -32,8 +34,8 @@ export class Messenger extends Component {
         };
 
         req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS , true);
-        req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
-      //  req.send();
+        req.setRequestHeader("secret-key", "$2b$10$MC7WsM2nFKf.X0X7Mls4w.0Ijauk9tyXOYV2VYxhtt8ncozO19uGi");
+        req.send();
       
       }
     // when user clicks on a contact name in the Sidebar,
@@ -53,7 +55,91 @@ export class Messenger extends Component {
 
   }
 
+  // function for creating timestamps that are used as
+  // IDs for new nessages
+  createTimeStamp=()=>{
+    let now = new Date();
+    let  timestamp = now.getFullYear().toString(); 
+         timestamp += ((now.getMonth < 9 ? '0' : '') + now.getMonth().toString()+1); // JS months are 0-based
+         timestamp += ((now.getDate() < 10) ? '0' : '') + now.getDate().toString(); 
+         timestamp += ((now.getHours < 10) ? '0' : '') + now.getHours().toString();
+ //  let hours = ((now.getHours() < 10) ? '0' : '') + now.getDate().toString();
+         timestamp += ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes().toString();
+         timestamp += ((now.getSeconds() < 10) ? '0' : '') + now.getSeconds().toString();
+
+    if(now.getMilliseconds()<10){
+      timestamp += '00' + now.getMilliseconds().toString();
+    }else if (now.getMilliseconds()<100){
+      timestamp += '0' + now.getMilliseconds().toString();
+    } else{
+      timestamp += now.getMilliseconds().toString();
+    }
+
+    return timestamp
+  }
+
+
+  //checks if newMessage is not empty, updates backend and UI
+  sendMessage = () => {
+    if(this.state.newMessage){
+      let timestamp = this.createTimeStamp();
+      let newMessageObj = {
+        messageText: this.state.newMessage,
+        author: 'me',
+        date: timestamp
+      }
+      let newData = [];
+    
+      //deeply copying and updating state data
+      for (let i = 0; i < this.state.data.length; i++) {
+        let deepCopy = [];
+        let updatedPerson = {};
+    
+        for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
+          deepCopy.push(Object.values(this.state.data[i])[0][z]);
+        }
+    
+        if (i == this.state.selectedChat) {
+          deepCopy.push(newMessageObj);
+        }
+    
+        let person = Object.keys(this.state.data[i])[0];
+        updatedPerson = {
+          [person]: deepCopy
+        }
+        newData.push(updatedPerson);
+      }
+    
+      let newDataObj = {
+        data: newData
+      };
+      let newDataJson = JSON.stringify(newDataObj);
+    
+    
+      let req = new XMLHttpRequest();
+    
+      req.onreadystatechange = () => {
+        if (req.readyState == XMLHttpRequest.DONE) {
+          console.log(req.responseText);
+          this.setState({
+            data: newData,
+            newMessage: ''
+          })
+        }
+      };
+    
+      req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
+      req.setRequestHeader("Content-Type", "application/json");
+      req.setRequestHeader("versioning", "false");
+      req.setRequestHeader("secret-key", "$2b$10$MC7WsM2nFKf.X0X7Mls4w.0Ijauk9tyXOYV2VYxhtt8ncozO19uGi");
+      req.send(newDataJson);
+    }
+    
+  
+  }
+
   render() {
+    console.log(this.state.data)
     // in thes isdebar messenger contacts are being displayed
     // sidebar is on the left of the page.
     // messaging section (that contains chat with selected contact) 
@@ -73,20 +159,23 @@ export class Messenger extends Component {
 
 
     return (
-                <div className={classes.chatComponent}>
-                        <div className={classes.sidebar}>
-                                        <Sidebar 
-                                                data={this.state.data}
-                                                selectChat={this.selectChat}/>
-                        </div>
+      <div className={classes.chatComponent}>
+              <div className={classes.sidebar}>
+                              <Sidebar 
+                                      data={this.state.data}
+                                      selectChat={this.selectChat}/>
+              </div>
 
-                        <div className={classes.messagingSection}>
-                                        {messagingSection}
-                                        <InputField inputChangedHandler={this.inputChangedHandler}/>
-                        </div>
-                       
+              <div className={classes.messagingSection}>
+                              {messagingSection}
+                              <InputField 
+                                          inputChangedHandler={this.inputChangedHandler}
+                                          sendMessage={this.sendMessage}
+                                          />
+              </div>
+            
 
-                </div> 
+      </div> 
     )
   }
 }
