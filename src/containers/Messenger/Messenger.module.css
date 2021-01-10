@@ -1,16 +1,16 @@
-.chatComponent{
-    display: flex;
+.chatComponent {
+  display: flex;
 }
 
-.sidebar{
-    border-top: .2rem solid #ececec ;
-    width: 30%;
-    display: inline-block;
+.sidebar {
+  border-top: 0.2rem solid #ececec;
+  width: 30%;
+  display: inline-block;
 }
 
-.messagingSection{
-    width: 70%;
-    display: inline-block;
-    font-size: 2rem;
-    text-align: center;
+.messagingSection {
+  width: 70%;
+  display: inline-block;
+  font-size: 2rem;
+  text-align: center;
 }
