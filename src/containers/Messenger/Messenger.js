@@ -5,6 +5,8 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import { Redirect } from "react-router-dom";
+import {connect} from 'react-redux';
 import classes from "./Messenger.module.css";
 
 export class Messenger extends Component {
@@ -15,18 +17,23 @@ export class Messenger extends Component {
   // newMessage - this is text that user types in input field
   // error - HTTP request error
 
-  state = {
-    data: [],
-    selectedChat: 0,
-    newMessage: null,
-    error: null,
-  };
+    // or super(props) ?
+
+    state = {
+      data: [],
+      selectedChat: 0,
+      newMessage: null,
+      error: null,
+    };
+  
+ 
 
   // when component mounts,
   // componnetDidMount sends HTTP request to get
   // chatting data (contact names and chats) from backend,
   // chatting data is then saved as state object
   componentDidMount() {
+
     let req = new XMLHttpRequest();
 
     req.onreadystatechange = () => {
@@ -158,6 +165,7 @@ export class Messenger extends Component {
   };
 
   render() {
+
     // in thes isdebar messenger contacts are being displayed
     // sidebar is on the left of the page.
     // messaging section (that contains chat with selected contact)
@@ -181,7 +189,10 @@ export class Messenger extends Component {
     }
 
     let chat = null;
-    if (this.state.data.length > 0) {
+
+    if(!this.props.email || !this.props.password){
+      chat=<Redirect to="/"/>
+    }else if (this.state.data.length > 0) {
       chat = (
         <div>
         <div className={classes.chatComponent}>
@@ -224,4 +235,12 @@ export class Messenger extends Component {
   }
 }
 
-export default Messenger;
+const mapStateToProps=state=>{
+  return{
+      email: state.email, 
+      password: state.password
+  }
+}
+
+export default connect(mapStateToProps)(Messenger);
+

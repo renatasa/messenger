@@ -22,7 +22,7 @@
     transition: background-color .3s ease;
 }
 
-.myProfile:active{
+.button:active{
 transform: scale(0.98);
 }
 
@@ -30,7 +30,14 @@ transform: scale(0.98);
     border: 5px solid blue;
     color:  #787878;
     font-size: 3rem;
-    margin-right: 4rem;
+    margin-right: 2rem;
     margin-left: 1rem;
     cursor: pointer;
 }
+
+.logout:active, .logout:hover{
+    color: #494949;
+}
+
+
+

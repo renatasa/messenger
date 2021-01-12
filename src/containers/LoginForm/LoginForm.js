@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-//import Spinner from "../../components/Spinner/Spinner";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import * as actions from '../../store/actions/index';
+import {connect} from 'react-redux';
 import classes from "./LoginForm.module.css";
 
 export class LoginForm extends Component {
@@ -91,7 +92,14 @@ export class LoginForm extends Component {
 
     if (this.state.isValid) {
       chatRedirect = <Redirect to={"/messenger"} />;
-      console.log("suthredirect ");
+      //email and password are being saved in redux store
+      //from redux store data will be passed to messenger component
+      //messenger component will render only if email and password are not null, 
+      //else, user will be redirected to login component
+      //when user clicks logout, email and password will be set to null in redux store 
+      //therefore user will be redirected to login form
+      this.props.onSetEmailPassword(this.state.email, this.state.password);
+     // this.setState({email:null, password: null})
     }
 
     return (
@@ -110,4 +118,11 @@ export class LoginForm extends Component {
   }
 }
 
-export default LoginForm;
+
+const mapDispatchToProps=dispatch=>{
+  return{
+      onSetEmailPassword: (email, password)=>dispatch(actions.setEmailPassword(email, password))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(LoginForm);
