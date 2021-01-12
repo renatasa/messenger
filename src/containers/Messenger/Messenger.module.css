@@ -5,12 +5,35 @@
 .sidebar {
   border-top: 0.2rem solid #ececec;
   width: 30%;
-  display: inline-block;
+  position: fixed;
+  height: 100vh;
+  top: 0%;
+  overflow-y: scroll;
+
+
 }
+
 
 .messagingSection {
   width: 70%;
-  display: inline-block;
   font-size: 2rem;
   text-align: center;
+  left: 30%;
+  bottom: 5%;
+  position: absolute;
+  height: 100vh;
+  /* display: flex;
+  flex-direction: column; */
+}
+
+.messagingSectionMessages{
+      border: 1px solid red;
+      /* margin-bottom: 20rem; */
+      margin-top: 2rem;
+      height: 85%;
+      overflow-y: scroll;
+      
+      /* margin-bottom: 1rem; */
+      
+  
 }

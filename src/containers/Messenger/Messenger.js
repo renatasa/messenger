@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Message from "../../components/Message/Message";
 import InputField from "../../components/UI/ChatInputField/ChatInputField";
-import ErrorMessage from '../../components/ErrorMessage/ErrorMessage';
-import Spinner from '../../components/Spinner/Spinner';
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import Spinner from "../../components/Spinner/Spinner";
 import classes from "./Messenger.module.css";
 
 export class Messenger extends Component {
@@ -146,15 +146,15 @@ export class Messenger extends Component {
       req.setRequestHeader("versioning", "false");
       req.setRequestHeader(
         "secret-key",
-        "$2b$10$L4eDTWs0EhRwLDrvJBmSOOZsCgkL103QHaarkuvKEzURiZrOyqA."
+        "$2b$10$L4eDTWs0EhRwLDrvJBmSOOZsCgkL103QHaarkuvKEzURiZrOyqA.y"
       );
       req.send(newDataJson);
     }
   };
 
-  resetError=()=>{
-    this.setState({error: null})
-  }
+  resetError = () => {
+    this.setState({ error: null });
+  };
 
   render() {
     // in thes isdebar messenger contacts are being displayed
@@ -178,35 +178,47 @@ export class Messenger extends Component {
         )
       );
     }
-    
-    let chat=null;
-    if (this.state.data.length>0 ){
-      chat=<div>
-<div className={classes.sidebar}>
-          <Sidebar data={this.state.data} selectChat={this.selectChat} />
-        </div>
 
-        <div className={classes.messagingSection}>
-          {messagingSection}
-          <InputField
-            inputChangedHandler={this.inputChangedHandler}
-            sendMessage={this.sendMessage}
+    let chat = null;
+    if (this.state.data.length > 0) {
+      chat = (
+        <div>
+        <div className={classes.chatComponent}>
+          
+          <div className={classes.sidebar}>
+            <Sidebar data={this.state.data} selectChat={this.selectChat} />
+          </div>
+
+      
+           <div className={classes.messagingSection}> 
+           <div className={classes.messagingSectionMessages}>{messagingSection}</div>
+            <InputField
+              inputChangedHandler={this.inputChangedHandler}
+              sendMessage={this.sendMessage}
+            />
+             </div>
+       
+          </div>
+          <ErrorMessage
+            error={this.state.error}
+            resetError={this.resetError}
+            errorType={"error"}
           />
         </div>
-        <ErrorMessage error={this.state.error} resetError={this.resetError}/>
-      </div>
-    } else if(this.state.data.length==0 && !this.state.error){
-      chat=<Spinner/>
-    } else if(this.state.data.length==0 && this.state.error){
-      chat=<ErrorMessage  error={this.state.error} resetError={this.resetError}/>
+      );
+    } else if (this.state.data.length == 0 && !this.state.error) {
+      chat = <Spinner />;
+    } else if (this.state.data.length == 0 && this.state.error) {
+      chat = (
+        <ErrorMessage
+          error={this.state.error}
+          resetError={this.resetError}
+          errorType={"error"}
+        />
+      );
     }
 
-    return (
-      <div className={classes.chatComponent}>
-        {chat}
-        
-      </div>
-    );
+    return <div >{chat}</div>;
   }
 }
 

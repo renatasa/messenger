@@ -1,14 +1,18 @@
 .inputSection {
   display: flex;
   align-items: center;
-  padding: 0rem 0rem 0rem 1rem;
+  padding: 1rem 0rem 1rem 1rem;
+  position: fixed;
+  bottom: 0%;
+  width: 80%;
+  background-color: #ffffff;
 }
 
 .inputField {
   border: 0.1rem solid #eeeeee;
   border-radius: 0.8rem;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem; 
   font-size: 0.8rem;
-  width: 80%;
+  width: 75%;
   outline: none;
 }

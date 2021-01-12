@@ -10,28 +10,56 @@ export const errorMessage = (props) => {
     setTimeout(() => props.resetError(), 2000);
   }
 
-  return (
-    <div
-      className={
-        props.error
-          ? `${classes.alertItemAuth} ${classes.alertItemAuth}`
-          : `${classes.inactiveAuth}`
-      }
-    >
-      <div className={classes.data}>
-        <p className={classes.title}>
-          <span>Error</span>
-        </p>
-        <p className={classes.sub}>{error ? error : undefined}</p>
-      </div>
+  switch (props.errorType) {
+    case "error":
+      return (
+        <div
+          className={
+            props.error ? `${classes.alertItem}` : `${classes.inactive}`
+          }
+        >
+          <div className={classes.data}>
+            <p className={classes.title}>
+              <span>Error</span>
+            </p>
+            <p className={classes.sub}>{error ? error : undefined}</p>
+          </div>
 
-      <FontAwesomeIcon
-        icon={faTimesCircle}
-        className={classes.close}
-        onClick={props.resetError}
-      />
-    </div>
-  );
+          <FontAwesomeIcon
+            icon={faTimesCircle}
+            className={classes.close}
+            onClick={props.resetError}
+          />
+        </div>
+      );
+
+    case "warning":
+      return (
+        <div
+          className={
+            props.error
+              ? `${classes.alertItem} ${classes.warning}`
+              : `${classes.inactive}`
+          }
+        >
+          <div className={classes.data}>
+            <p className={classes.title}>
+              <span>Warning</span>
+            </p>
+            <p className={classes.sub}>{error ? error : undefined}</p>
+          </div>
+
+          <FontAwesomeIcon
+            icon={faTimesCircle}
+            className={classes.close}
+            onClick={props.resetError}
+          />
+        </div>
+      );
+
+    default:
+      return "";
+  }
 };
 
 export default errorMessage;
