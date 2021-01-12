@@ -4,6 +4,7 @@ import Message from "../../components/Message/Message";
 import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
+import Navbar from "../../components/Navbar/Navbar";
 import classes from "./Messenger.module.css";
 
 export class Messenger extends Component {
@@ -191,6 +192,7 @@ export class Messenger extends Component {
 
       
            <div className={classes.messagingSection}> 
+           <Navbar/>
            <div className={classes.messagingSectionMessages}>{messagingSection}</div>
             <InputField
               inputChangedHandler={this.inputChangedHandler}

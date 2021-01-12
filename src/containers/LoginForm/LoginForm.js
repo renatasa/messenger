@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
-import Spinner from "../../components/Spinner/Spinner";
+//import Spinner from "../../components/Spinner/Spinner";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import classes from "./LoginForm.module.css";
 
@@ -95,6 +95,7 @@ export class LoginForm extends Component {
     }
 
     return (
+    
       <div className={classes.formContainer}>
         {chatRedirect}
         {form}
@@ -104,6 +105,7 @@ export class LoginForm extends Component {
           resetError={this.resetError}
         />
       </div>
+      
     );
   }
 }

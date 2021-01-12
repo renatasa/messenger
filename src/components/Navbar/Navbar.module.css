@@ -1,0 +1,36 @@
+.navbar{
+     height: 8%; 
+    border: 2px solid blue;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 1rem;
+
+}
+
+.myProfile{
+    background-color: #787878;
+    color: #ffffff;
+    border-radius: .4rem;
+    padding: .4rem .6rem;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.myProfile:hover{
+    background-color: #494949;
+    transition: background-color .3s ease;
+}
+
+.myProfile:active{
+transform: scale(0.98);
+}
+
+.logout{
+    border: 5px solid blue;
+    color:  #787878;
+    font-size: 3rem;
+    margin-right: 4rem;
+    margin-left: 1rem;
+    cursor: pointer;
+}
