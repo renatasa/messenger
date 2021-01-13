@@ -17,8 +17,6 @@ export class Messenger extends Component {
   // newMessage - this is text that user types in input field
   // error - HTTP request error
 
-  // or super(props) ?
-
   state = {
     data: [],
     selectedChat: 0,
@@ -55,6 +53,7 @@ export class Messenger extends Component {
     if (req.status !== 200) {
       this.setState({ error: JSON.parse(req.response).message });
     } else {
+      console.log("this is else");
       this.setState({
         data: newData,
         newMessage: "",
@@ -167,6 +166,8 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
+    console.log(this.state.newMessage);
+
     let messagingSection = [];
 
     if (this.state.data.length > 0) {
@@ -212,6 +213,8 @@ export class Messenger extends Component {
               <InputField
                 inputChangedHandler={this.inputChangedHandler}
                 sendMessage={this.sendMessage}
+                newMessage={this.state.newMessage}
+                onEnterPress={this.onEnterPress}
               />
             </div>
           </div>
