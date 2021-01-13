@@ -18,3 +18,8 @@
 .contactName:hover {
   background: #eeeeee;
 }
+
+.selectedChat, .selectedChat:hover{
+  background-color:  #009578;
+  color: #ffffff;
+}

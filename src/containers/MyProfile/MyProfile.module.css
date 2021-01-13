@@ -1,0 +1,47 @@
+.profilePhoto {
+  cursor: pointer;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 5rem;
+  border: 0.4rem solid #ececec;
+  background-color: #009578;
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 3rem;
+  color: #ffffff;
+  margin: 0 auto;
+}
+
+.editProfilePhoto {
+  font-size: 1.2rem;
+  
+  color: #009578;
+ 
+  margin-top: 0.5rem;
+}
+
+.photoDiv{
+    text-align: center;
+    cursor: pointer;
+}
+
+.editProfilePhoto:active {
+  transform: scale(0.98);
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.shortInfo {
+  width: 50%;
+}
+
+@media (max-width: 700px) {
+  .shortInfo {
+    width: 80%;
+  }
+}

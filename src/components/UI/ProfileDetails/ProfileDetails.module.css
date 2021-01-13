@@ -1,0 +1,48 @@
+.label {
+  color: #787878;
+  margin: 0 auto;
+}
+
+.details {
+  font-size: 1.2rem;
+  color: #494949;
+  margin: 0 auto;
+  border: none;
+  outline: none;
+}
+
+.profileDetails {
+  border-bottom: 0.1rem solid #ececec;
+  margin-top: -1rem;
+}
+
+.show {
+  width: 9rem;
+  padding-top: 0.4rem;
+  text-align: center;
+  height: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #b32f2d;
+  color: #ffffff;
+  transform: translate(100%, -120%);
+  border-radius: 0.8rem;
+  opacity: 1;
+  transition: all 0.2s ease;
+}
+
+.hide {
+  width: 9rem;
+  padding-top: 0.4rem;
+  text-align: center;
+  height: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #b32f2d;
+  color: #ffffff;
+  opacity: 0;
+  transform: translate(100%, -120%);
+  border-radius: 0.8rem;
+  transition: all 0.2s ease;
+  visibility: hidden;
+}
