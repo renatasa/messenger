@@ -9,8 +9,6 @@
   height: 100vh;
   top: 0%;
   overflow-y: scroll;
-
-
 }
 
 
@@ -19,22 +17,12 @@
   font-size: 2rem;
   text-align: center;
   left: 30%;
-  /* bottom: 5%; */
   position: absolute;
   height: 100vh;
-  /* display: flex;
-  flex-direction: column; */
 }
 
 .messagingSectionMessages{
       border: 1px solid red;
-      /* margin-bottom: 20rem; */
-      /* margin-top: 3rem; */
-      /* top: 10%; */
       height: 78%;
       overflow-y: scroll;
-      
-      /* margin-bottom: 1rem; */
-      
-  
 }

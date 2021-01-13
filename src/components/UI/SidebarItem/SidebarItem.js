@@ -9,7 +9,7 @@ export const sidebarItem = (props) => {
 
   return (
     <div
-      className={classes.contactName}
+      className={props.selectedChat ? `${classes.contactName} ${classes.selectedChat}` : classes.contactName}
       onClick={() => props.selectChat(props.index)}
     >
       {props.contactName}

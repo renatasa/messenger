@@ -5,6 +5,8 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
 
 export class Messenger extends Component {
@@ -51,6 +53,7 @@ export class Messenger extends Component {
     if (req.status !== 200) {
       this.setState({ error: JSON.parse(req.response).message });
     } else {
+      console.log("this is else");
       this.setState({
         data: newData,
         newMessage: "",
@@ -158,10 +161,12 @@ export class Messenger extends Component {
   };
 
   render() {
-    // in thes isdebar messenger contacts are being displayed
-    // sidebar is on the left of the page.
-    // messaging section (that contains chat with selected contact)
+    // in the Sidebar, messenger contacts are being displayed
+    // Sidebar is on the left of the page.
+    // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
+
+    console.log(this.state.newMessage);
 
     let messagingSection = [];
 
@@ -181,25 +186,37 @@ export class Messenger extends Component {
     }
 
     let chat = null;
-    if (this.state.data.length > 0) {
+
+    // user logs in by providing email and password
+    // if user tries to access Messenger component
+    // without logging in first,
+    // he is being redirected to LoginForm component
+    if (!this.props.email || !this.props.password) {
+      chat = <Redirect to="/" />;
+    } else if (this.state.data.length > 0) {
       chat = (
         <div>
-        <div className={classes.chatComponent}>
-          
-          <div className={classes.sidebar}>
-            <Sidebar data={this.state.data} selectChat={this.selectChat} />
-          </div>
+          <div className={classes.chatComponent}>
+            <div className={classes.sidebar}>
+              <Sidebar
+                data={this.state.data}
+                selectChat={this.selectChat}
+                selectedChat={this.state.selectedChat}
+              />
+            </div>
 
-      
-           <div className={classes.messagingSection}> 
-           <Navbar/>
-           <div className={classes.messagingSectionMessages}>{messagingSection}</div>
-            <InputField
-              inputChangedHandler={this.inputChangedHandler}
-              sendMessage={this.sendMessage}
-            />
-             </div>
-       
+            <div className={classes.messagingSection}>
+              <Navbar navigateTo={"myProfile"} />
+              <div className={classes.messagingSectionMessages}>
+                {messagingSection}
+              </div>
+              <InputField
+                inputChangedHandler={this.inputChangedHandler}
+                sendMessage={this.sendMessage}
+                newMessage={this.state.newMessage}
+                onEnterPress={this.onEnterPress}
+              />
+            </div>
           </div>
           <ErrorMessage
             error={this.state.error}
@@ -220,8 +237,15 @@ export class Messenger extends Component {
       );
     }
 
-    return <div >{chat}</div>;
+    return <div>{chat}</div>;
   }
 }
 
-export default Messenger;
+const mapStateToProps = (state) => {
+  return {
+    email: state.email,
+    password: state.password,
+  };
+};
+
+export default connect(mapStateToProps)(Messenger);
