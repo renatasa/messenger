@@ -24,15 +24,11 @@ export class Messenger extends Component {
     newMessage: null,
     errorLoadingChats: null,
     errorSendingMessage: null,
+    showSidebar: false
   };
 
-  // when component mounts,
-  // componnetDidMount sends HTTP request to get
-  // chatting data (contact names and chats) from backend,
-  // chatting data is then saved as state object
-  componentDidMount() {
+  chatsDataGetRequest = () => {
     let req = new XMLHttpRequest();
-
     req.onreadystatechange = () => {
       if (req.readyState == XMLHttpRequest.DONE) {
         let dataUpdated = [];
@@ -42,34 +38,76 @@ export class Messenger extends Component {
         this.checkRequestStatusUpdateState(
           req,
           dataUpdated,
-          "errorLoadingChats"
+          "errorLoadingChats",
+          false
         );
       }
     };
 
     req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-    req.setRequestHeader(
-      "secret-key",
-      "$2b$10$L4eDTWs0EhRwLDrvJBmSOOZsCgkL103QHaarkuvKEzURiZrOyqA.y"
-    );
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
     req.send();
+  };
+
+  // when component mounts,
+  // componnetDidMount sends HTTP request to get
+  // chatting data (contact names and chats) from backend,
+  // chatting data is then saved as this.state.data.
+
+  // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
+  // and chat UI if there are any new messages sent by other users. It is set to execute every 2s.
+  // this.sendContinuousRequestsUpdateChats is eliminated, when Messenger component unmounts.
+  // currently this.sendContinuousRequestsUpdateChats  and componentWIllUnmount are commented
+  // to prevent exceeding amount of free requests of JSONbin.io
+  componentDidMount() {
+    this.chatsDataGetRequest();
+    //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
+    //   this.chatsDataGetRequest();
+    // }, 2000);
   }
 
+  // componentWillUnmount() {
+  //   clearInterval(this.sendContinuousRequestsUpdateChats);
+  // }
+
+  //scrolls to latest messages in chat
   componentDidUpdate() {
     this.scrollToBottom();
   }
 
-  checkRequestStatusUpdateState = (req, newData, error) => {
+  checkRequestStatusUpdateState = (
+    req,
+    newData,
+    error,
+    repeatingGetRequest
+  ) => {
+    // if request status !=200 , this.state.data does not update, this.state.error updates
     if (req.status !== 200) {
       this.setState({ [error]: JSON.parse(req.response).message });
-    } else {
+    }
+
+    // this version is used when sending new text message (with PUT request)
+    // after successfully sending new text message, user's input field needs to be emptied,
+    // therefore, newMessage is set to  ""
+    if (repeatingGetRequest == false) {
       this.setState({
         data: newData,
         newMessage: "",
         [error]: null,
       });
     }
+
+    // this version is used when sending GET request and continuously updating
+    // chats with new messages sent by other users (e.g. John, Kate etc.) while sending GET requests
+    // in this case , emptying current user's input field is undesirable
+    if (repeatingGetRequest == true) {
+      this.setState({
+        data: newData,
+        [error]: null,
+      });
+    }
   };
+
   // when user clicks on a contact name in the Sidebar,
   // selectChat function updates selectedChat property in state
   // therefore, messagingSection array
@@ -109,8 +147,9 @@ export class Messenger extends Component {
     return timestamp;
   };
 
+  //this function is used in sendMessage function
   deeplyCopyChatData = (newData, newMessageObj) => {
-    //deeply copying and immutably updating state data
+    // function for deeply copying and immutably updating state data
     // outer for loop loops through contacts (e.g. John, Kate etc)
     for (let i = 0; i < this.state.data.length; i++) {
       let deepCopy = [];
@@ -118,10 +157,10 @@ export class Messenger extends Component {
       // value of this object is array of messages of chatting with that person
       let updatedPerson = {};
 
-      // Inner for loop loops though all messages of all chats and copies them immutably to deepCopy array.
+      // Inner for loop loops though all messages of a chat and copies them to deepCopy array.
       // When it finds chat with currently selected contact (which is displayed in messaging section of Messenger component)
       // (for example - messages of chatting with John)
-      // it immutably copies messages of that chat to deepCopy array and updates with new message
+      // it copies messages of that chat to deepCopy array and updates with new message
       for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
         // copies all messages in chat
         deepCopy.push(Object.values(this.state.data[i])[0][z]);
@@ -168,7 +207,8 @@ export class Messenger extends Component {
           this.checkRequestStatusUpdateState(
             req,
             newData,
-            "errorSendingMessage"
+            "errorSendingMessage",
+            false
           );
         }
       };
@@ -232,7 +272,7 @@ export class Messenger extends Component {
       chat = (
         <div>
           <div className={classes.chatComponent}>
-            <div className={classes.sidebar}>
+            <div className={`${classes.sidebar} ${classes.sidebarPhoneNone}`}>
               <Sidebar
                 data={this.state.data}
                 selectChat={this.selectChat}
@@ -240,14 +280,14 @@ export class Messenger extends Component {
               />
             </div>
 
-            <div className={classes.messagingSection}>
+            <div className={`${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`}>
               <Navbar
                 navigateTo={"myProfile"}
                 chatWith={
                   Object.keys(this.state.data[this.state.selectedChat])[0]
                 }
               />
-              <div className={classes.messagingSectionMessages}>
+              <div className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
                 <div
                   ref={(el) => {
@@ -259,7 +299,6 @@ export class Messenger extends Component {
                 inputChangedHandler={this.inputChangedHandler}
                 sendMessage={this.sendMessage}
                 newMessage={this.state.newMessage}
-                onEnterPress={this.onEnterPress}
               />
             </div>
           </div>

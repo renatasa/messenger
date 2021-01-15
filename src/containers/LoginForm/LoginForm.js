@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
 import * as actions from '../../store/actions/index';
 import {connect} from 'react-redux';
 import classes from "./LoginForm.module.css";
@@ -34,7 +35,6 @@ export class LoginForm extends Component {
     if (this.state.password.length > 0) {
       isValid = true && isValid;
     }
-    console.log("validate email ", isValid);
 
     if (isValid) {
       this.setState({ isValid: isValid });
@@ -75,6 +75,7 @@ export class LoginForm extends Component {
           type="password"
           placeholder="Password"
           value={this.state.password}
+          onKeyPress={handleUserKeyPress(this.validateLoginData)}
           onChange={(event) => this.inputChangedHandler(event, "password")}
         />
       </div>
@@ -82,7 +83,7 @@ export class LoginForm extends Component {
 
     // Login form itself
     let form = (
-      <div className={classes.container}>
+      <form className={classes.container}>
         <div>
           <div className={classes.formTitle}>Login</div>
           {inputs}
@@ -94,7 +95,7 @@ export class LoginForm extends Component {
             LOGIN
           </button>
         </div>
-      </div>
+      </form>
     );
 
     let chatRedirect = null;
