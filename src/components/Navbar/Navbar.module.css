@@ -42,5 +42,12 @@ transform: scale(0.98);
 
 a{text-decoration: none; color: #ffffff;}
 
+.chatWith{
+    color: #009578;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-right: 2rem;
+}
+
 
 

@@ -15,8 +15,10 @@ export const navbar = (props) => {
   // navbar updates its UI when it receives navigateTo prop
 
   let navContent=null;
+  let chatWith=null;
   if(props.navigateTo=='myProfile'){
     navContent=<NavLink to="/myprofile"><FontAwesomeIcon icon={faUser}/></NavLink>
+    chatWith=<div className={classes.chatWith}>{props.chatWith}</div>
   }
 
   if(props.navigateTo=='messenger'){
@@ -25,6 +27,7 @@ export const navbar = (props) => {
 
   return (
     <div className={props.navigateTo=="messenger" ? `${classes.navbar} ${classes.navbarMyProfile}` : classes.navbar }>
+      {chatWith}
             <div className={`${classes.myProfile} ${classes.button}`}>{navContent}</div>
             <div ><FontAwesomeIcon icon={faSignOutAlt} className={`${classes.logout} ${classes.button}`} onClick={props.onLogout}/></div>
    </div>

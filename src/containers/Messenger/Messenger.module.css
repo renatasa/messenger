@@ -4,7 +4,7 @@
 
 .sidebar {
   border-top: 0.2rem solid #ececec;
-  width: 30%;
+  width: 20%;
   position: fixed;
   height: 100vh;
   top: 0%;
@@ -13,10 +13,10 @@
 
 
 .messagingSection {
-  width: 70%;
+  width: 80%;
   font-size: 2rem;
   text-align: center;
-  left: 30%;
+  left: 20%;
   position: absolute;
   height: 100vh;
 }
@@ -26,3 +26,33 @@
       height: 78%;
       overflow-y: scroll;
 }
+
+@media (max-width: 500px) {
+  .sidebarPhoneNone {
+    display: none;
+  }
+
+  .sidebarPhoneDisplay {
+    top: 8%;
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+  }
+
+  .messagingSectionPhoneDisplay {
+    width: 100%;
+    left: 0%;
+  }
+  
+  .messagingSectionMessagesPhoneDisplay{
+    border: 1px solid red;
+    height: 78%;
+    /* overflow-y: scroll; */
+}
+  .messagingSectionPhoneNone {
+display: none;
+  }
+
+
+}
+  

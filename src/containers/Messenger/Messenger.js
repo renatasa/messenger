@@ -15,13 +15,15 @@ export class Messenger extends Component {
   // messenger displays first chat (received from backend data array) in Messaging section
   // therefore selectedChat by default is 0
   // newMessage - this is text that user types in input field
-  // error - HTTP request error
+  // errorLoadingChats - HTTP GET request error
+  // errorSendingMessage - HTTP POST request error
 
   state = {
     data: [],
     selectedChat: 0,
     newMessage: null,
-    error: null,
+    errorLoadingChats: null,
+    errorSendingMessage: null,
   };
 
   // when component mounts,
@@ -37,7 +39,11 @@ export class Messenger extends Component {
         if (req.status == 200) {
           dataUpdated = [...JSON.parse(req.responseText)["data"]];
         }
-        this.checkRequestStatusUpdateState(req, dataUpdated);
+        this.checkRequestStatusUpdateState(
+          req,
+          dataUpdated,
+          "errorLoadingChats"
+        );
       }
     };
 
@@ -49,15 +55,18 @@ export class Messenger extends Component {
     req.send();
   }
 
-  checkRequestStatusUpdateState = (req, newData) => {
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  checkRequestStatusUpdateState = (req, newData, error) => {
     if (req.status !== 200) {
-      this.setState({ error: JSON.parse(req.response).message });
+      this.setState({ [error]: JSON.parse(req.response).message });
     } else {
-      console.log("this is else");
       this.setState({
         data: newData,
         newMessage: "",
-        error: null,
+        [error]: null,
       });
     }
   };
@@ -100,9 +109,42 @@ export class Messenger extends Component {
     return timestamp;
   };
 
+  deeplyCopyChatData = (newData, newMessageObj) => {
+    //deeply copying and immutably updating state data
+    // outer for loop loops through contacts (e.g. John, Kate etc)
+    for (let i = 0; i < this.state.data.length; i++) {
+      let deepCopy = [];
+      // key of this object is person name - e.g. John, Kate etc.
+      // value of this object is array of messages of chatting with that person
+      let updatedPerson = {};
+
+      // Inner for loop loops though all messages of all chats and copies them immutably to deepCopy array.
+      // When it finds chat with currently selected contact (which is displayed in messaging section of Messenger component)
+      // (for example - messages of chatting with John)
+      // it immutably copies messages of that chat to deepCopy array and updates with new message
+      for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
+        // copies all messages in chat
+        deepCopy.push(Object.values(this.state.data[i])[0][z]);
+      }
+
+      // if finds currently selected chat - pushes new message
+      if (i == this.state.selectedChat) {
+        deepCopy.push(newMessageObj);
+      }
+
+      let person = Object.keys(this.state.data[i])[0];
+      updatedPerson = {
+        [person]: deepCopy,
+      };
+      newData.push(updatedPerson);
+    }
+
+    return newData;
+  };
+
   //checks if newMessage is not empty, updates backend and UI
   sendMessage = () => {
-    if (this.state.newMessage && !this.state.error) {
+    if (this.state.newMessage && !this.state.errorSendingMessage) {
       let timestamp = this.createTimeStamp();
       let newMessageObj = {
         messageText: this.state.newMessage,
@@ -111,25 +153,7 @@ export class Messenger extends Component {
       };
       let newData = [];
 
-      //deeply copying and updating state data
-      for (let i = 0; i < this.state.data.length; i++) {
-        let deepCopy = [];
-        let updatedPerson = {};
-
-        for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
-          deepCopy.push(Object.values(this.state.data[i])[0][z]);
-        }
-
-        if (i == this.state.selectedChat) {
-          deepCopy.push(newMessageObj);
-        }
-
-        let person = Object.keys(this.state.data[i])[0];
-        updatedPerson = {
-          [person]: deepCopy,
-        };
-        newData.push(updatedPerson);
-      }
+      this.deeplyCopyChatData(newData, newMessageObj);
 
       let newDataObj = {
         data: newData,
@@ -141,23 +165,28 @@ export class Messenger extends Component {
 
       req.onreadystatechange = () => {
         if (req.readyState == XMLHttpRequest.DONE) {
-          this.checkRequestStatusUpdateState(req, newData);
+          this.checkRequestStatusUpdateState(
+            req,
+            newData,
+            "errorSendingMessage"
+          );
         }
       };
 
       req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
       req.setRequestHeader("Content-Type", "application/json");
       req.setRequestHeader("versioning", "false");
-      req.setRequestHeader(
-        "secret-key",
-        "$2b$10$L4eDTWs0EhRwLDrvJBmSOOZsCgkL103QHaarkuvKEzURiZrOyqA.y"
-      );
+      req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
       req.send(newDataJson);
     }
   };
 
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView();
+  };
+
   resetError = () => {
-    this.setState({ error: null });
+    this.setState({ errorSendingMessage: null });
   };
 
   render() {
@@ -165,8 +194,6 @@ export class Messenger extends Component {
     // Sidebar is on the left of the page.
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
-
-    console.log(this.state.newMessage);
 
     let messagingSection = [];
 
@@ -190,10 +217,18 @@ export class Messenger extends Component {
     // user logs in by providing email and password
     // if user tries to access Messenger component
     // without logging in first,
-    // he is being redirected to LoginForm component
+    // user is being redirected to LoginForm component
+
+    let redirectToLogin = null;
     if (!this.props.email || !this.props.password) {
-      chat = <Redirect to="/" />;
-    } else if (this.state.data.length > 0) {
+      redirectToLogin = <Redirect to="/" />;
+    }
+
+    // If chats data is fetched from backend into state,
+    // messenger componnet displays chats.
+    // <div ref={(el) => {this.messagesEnd = el; }}  ></div> - this is a dummy div which is used for scrolling down to the end of chat
+
+    if (this.state.data.length > 0) {
       chat = (
         <div>
           <div className={classes.chatComponent}>
@@ -206,9 +241,19 @@ export class Messenger extends Component {
             </div>
 
             <div className={classes.messagingSection}>
-              <Navbar navigateTo={"myProfile"} />
+              <Navbar
+                navigateTo={"myProfile"}
+                chatWith={
+                  Object.keys(this.state.data[this.state.selectedChat])[0]
+                }
+              />
               <div className={classes.messagingSectionMessages}>
                 {messagingSection}
+                <div
+                  ref={(el) => {
+                    this.messagesEnd = el;
+                  }}
+                ></div>
               </div>
               <InputField
                 inputChangedHandler={this.inputChangedHandler}
@@ -219,25 +264,38 @@ export class Messenger extends Component {
             </div>
           </div>
           <ErrorMessage
-            error={this.state.error}
+            error={this.state.errorSendingMessage}
             resetError={this.resetError}
-            errorType={"error"}
+            errorType={"errorSendingMessage"}
           />
         </div>
       );
-    } else if (this.state.data.length == 0 && !this.state.error) {
+    }
+
+    // if chats data is not yet fetched from backend into state,
+    // messenger componnet displays spinner
+    if (this.state.data.length == 0 && !this.state.errorLoadingChats) {
       chat = <Spinner />;
-    } else if (this.state.data.length == 0 && this.state.error) {
+    }
+
+    // if chats data was not fetched from backend into state
+    // (server responded with status code which is not 200)
+    // messenger componnet displays Error message
+    if (this.state.errorLoadingChats) {
       chat = (
         <ErrorMessage
-          error={this.state.error}
-          resetError={this.resetError}
-          errorType={"error"}
+          error={this.state.errorLoadingChats}
+          errorType={"errorLoadingChats"}
         />
       );
     }
 
-    return <div>{chat}</div>;
+    return (
+      <div>
+        {redirectToLogin}
+        {chat}
+      </div>
+    );
   }
 }
 
