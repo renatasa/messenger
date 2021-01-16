@@ -15,9 +15,14 @@ export const navbar = (props) => {
   // navbar updates its UI when it receives navigateTo prop
 
   let navContent=null;
+  let navContentForMobileDevice=null;
+  // chatWith - name of contact that user is currently chatting with 
+  // is displayed in Messenger component NavBar
   let chatWith=null;
+
   if(props.navigateTo=='myProfile'){
     navContent=<NavLink to="/myprofile"><FontAwesomeIcon icon={faUser}/></NavLink>
+    navContentForMobileDevice=<div className={props.showSidebarProperty? `${classes.mobileDevice}` : `${classes.myProfile} ${classes.button}`} onClick={props.showSidebarFunction}><FontAwesomeIcon icon={faComments} onClick={props.goToMessenger}/></div>
     chatWith=<div className={classes.chatWith}>{props.chatWith}</div>
   }
 
@@ -28,6 +33,7 @@ export const navbar = (props) => {
   return (
     <div className={props.navigateTo=="messenger" ? `${classes.navbar} ${classes.navbarMyProfile}` : classes.navbar }>
       {chatWith}
+      {navContentForMobileDevice}
             <div className={`${classes.myProfile} ${classes.button}`}>{navContent}</div>
             <div ><FontAwesomeIcon icon={faSignOutAlt} className={`${classes.logout} ${classes.button}`} onClick={props.onLogout}/></div>
    </div>

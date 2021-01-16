@@ -1,0 +1,32 @@
+
+.sidebarAddContact {
+    display: flex;
+}
+.sidebarInputField {
+
+  border: 0.1rem solid #eeeeee;
+  border-radius: 0.8rem;
+ margin-left: .3rem;
+ padding: 0rem 0rem 0rem .5rem;
+width: 95%;
+}
+
+
+
+.addContact {
+    width: 5%;
+  color: #787878;
+  font-size: 2rem;
+  margin-right: 2rem;
+  margin-left: 1rem;
+  cursor: pointer;
+}
+
+.addContact:active,
+.addContact:hover {
+  color: #494949;
+}
+
+.addContact:active {
+  transform: scale(0.98);
+}

@@ -16,7 +16,7 @@ export const inputField = (props) => {
         className={classes.inputField}
         placeholder="type your message here..."
         value={props.newMessage}
-        onChange={props.inputChangedHandler}
+        onChange={(event) => props.inputChangedHandler(event, "newMessage")}
       />
       <div className={classes.sendButton} onClick={props.sendMessage}>
         <FontAwesomeIcon icon={faPaperPlane} />

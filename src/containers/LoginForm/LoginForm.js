@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
-import * as actions from '../../store/actions/index';
-import {connect} from 'react-redux';
+import * as actions from "../../store/actions/index";
+import { connect } from "react-redux";
 import classes from "./LoginForm.module.css";
 
 export class LoginForm extends Component {
@@ -75,8 +75,8 @@ export class LoginForm extends Component {
           type="password"
           placeholder="Password"
           value={this.state.password}
-          onKeyPress={handleUserKeyPress(this.validateLoginData)}
           onChange={(event) => this.inputChangedHandler(event, "password")}
+          onKeyPress={(event) => handleUserKeyPress(event, this.submitHandler)}
         />
       </div>
     );
@@ -104,19 +104,19 @@ export class LoginForm extends Component {
       chatRedirect = <Redirect to={"/messenger"} />;
       //email and password are being saved in redux store
       //from redux store data will be passed to messenger component
-      //messenger component will render only if email and password are not null, 
+      //messenger component will render only if email and password are not null,
       //else, user will be redirected to login component
-      //when user clicks logout, email and password will be set to null in redux store 
+      //when user clicks logout, email and password will be set to null in redux store
       //therefore user will be redirected to login form
       this.props.onSetEmailPassword(this.state.email, this.state.password);
     }
 
-    // ErrorMessage - is visible only when user tries to login 
+    // ErrorMessage - is visible only when user tries to login
     // without providing email and password.
     // When this.state.error becomes not null or false,
     // this changes css class in ErrorMessage component
     // therefore, error message becomes visible with transition.
-    // This error message dissapears in 2sec automatically, 
+    // This error message dissapears in 2sec automatically,
     // or user can turn it off by clicking X .
     return (
       <div className={classes.formContainer}>
@@ -128,16 +128,15 @@ export class LoginForm extends Component {
           resetError={this.resetError}
         />
       </div>
-      
     );
   }
 }
 
-
-const mapDispatchToProps=dispatch=>{
-  return{
-      onSetEmailPassword: (email, password)=>dispatch(actions.setEmailPassword(email, password))
-  }
-}
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetEmailPassword: (email, password) =>
+      dispatch(actions.setEmailPassword(email, password)),
+  };
+};
 
 export default connect(null, mapDispatchToProps)(LoginForm);

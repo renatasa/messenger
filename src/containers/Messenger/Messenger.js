@@ -5,6 +5,7 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
@@ -21,10 +22,11 @@ export class Messenger extends Component {
   state = {
     data: [],
     selectedChat: 0,
-    newMessage: null,
+    newMessage: "",
+    newContact: "",
     errorLoadingChats: null,
     errorSendingMessage: null,
-    showSidebar: false
+    showSidebar: true,
   };
 
   chatsDataGetRequest = () => {
@@ -39,7 +41,7 @@ export class Messenger extends Component {
           req,
           dataUpdated,
           "errorLoadingChats",
-          false
+          "do not clear input"
         );
       }
     };
@@ -47,6 +49,32 @@ export class Messenger extends Component {
     req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
     req.send();
+  };
+
+  sendPutRequest = (newData, clearInput) => {
+    let newDataObj = {
+      data: newData,
+    };
+
+    let newDataJson = JSON.stringify(newDataObj);
+    let req = new XMLHttpRequest();
+
+    req.onreadystatechange = () => {
+      if (req.readyState == XMLHttpRequest.DONE) {
+        this.checkRequestStatusUpdateState(
+          req,
+          newData,
+          "errorSendingMessage",
+          clearInput
+        );
+      }
+    };
+
+    req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("versioning", "false");
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
+    req.send(newDataJson);
   };
 
   // when component mounts,
@@ -79,33 +107,29 @@ export class Messenger extends Component {
     req,
     newData,
     error,
-    repeatingGetRequest
+    clearInput
   ) => {
     // if request status !=200 , this.state.data does not update, this.state.error updates
     if (req.status !== 200) {
       this.setState({ [error]: JSON.parse(req.response).message });
     }
 
-    // this version is used when sending new text message (with PUT request)
-    // after successfully sending new text message, user's input field needs to be emptied,
-    // therefore, newMessage is set to  ""
-    if (repeatingGetRequest == false) {
-      this.setState({
-        data: newData,
-        newMessage: "",
-        [error]: null,
-      });
-    }
-
-    // this version is used when sending GET request and continuously updating
-    // chats with new messages sent by other users (e.g. John, Kate etc.) while sending GET requests
-    // in this case , emptying current user's input field is undesirable
-    if (repeatingGetRequest == true) {
+    // when fetching data from backend, emptying user's input fields in UI is undesirable
+    // when sending new text message, we want to set this.state.newMessage=""
+    // after new contact is added, we want to set this.state.newContact=""
+    if (clearInput == "do not clear input") {
       this.setState({
         data: newData,
         [error]: null,
       });
+    } else{
+      this.setState({
+        data: newData,
+        [clearInput]: "",
+        [error]: null,
+      });
     }
+ 
   };
 
   // when user clicks on a contact name in the Sidebar,
@@ -114,13 +138,18 @@ export class Messenger extends Component {
   // updates and displays chat with selected user
   selectChat = (index) => {
     this.setState({ selectedChat: index });
+
+    // when this.state.showSidebar is false,
+    // Sidebar is assigned CSS class with display: none property
+    //this function hides sidebar on mobile devices
+    this.hideSidebar();
   };
 
   // updates newMessage property in state object
   // when user starts typing new message into InputField
-  inputChangedHandler = (event) => {
+  inputChangedHandler = (event, inputName) => {
     event.preventDefault();
-    this.setState({ newMessage: event.target.value });
+    this.setState({ [inputName]: event.target.value });
   };
 
   // function for creating timestamps that are used as
@@ -163,6 +192,7 @@ export class Messenger extends Component {
       // it copies messages of that chat to deepCopy array and updates with new message
       for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
         // copies all messages in chat
+        console.log("inner for");
         deepCopy.push(Object.values(this.state.data[i])[0][z]);
       }
 
@@ -181,7 +211,7 @@ export class Messenger extends Component {
     return newData;
   };
 
-  //checks if newMessage is not empty, updates backend and UI
+  //checks if this.state.newMessage is not empty, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
       let timestamp = this.createTimeStamp();
@@ -194,31 +224,19 @@ export class Messenger extends Component {
 
       this.deeplyCopyChatData(newData, newMessageObj);
 
-      let newDataObj = {
-        data: newData,
-      };
-
-      let newDataJson = JSON.stringify(newDataObj);
-
-      let req = new XMLHttpRequest();
-
-      req.onreadystatechange = () => {
-        if (req.readyState == XMLHttpRequest.DONE) {
-          this.checkRequestStatusUpdateState(
-            req,
-            newData,
-            "errorSendingMessage",
-            false
-          );
-        }
-      };
-
-      req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-      req.setRequestHeader("Content-Type", "application/json");
-      req.setRequestHeader("versioning", "false");
-      req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
-      req.send(newDataJson);
+      this.sendPutRequest(newData, "newMessage");
     }
+  };
+
+    //checks if this.state.newContact is not empty, updates backend and UI
+  addNewContact = () => {
+    if(this.state.addNewContact!==""){
+      let newData = JSON.parse(JSON.stringify(this.state.data));
+      let newContactData = { [this.state.newContact]: [] };
+      newData.splice(0, 0, newContactData);
+      this.sendPutRequest(newData, "newContact");
+    }
+    
   };
 
   scrollToBottom = () => {
@@ -229,12 +247,23 @@ export class Messenger extends Component {
     this.setState({ errorSendingMessage: null });
   };
 
+  showSidebarFunction = () => {
+    console.log("showSidebar");
+    this.setState({ showSidebar: true });
+  };
+
+  hideSidebar = () => {
+    this.setState({ showSidebar: false });
+  };
+
   render() {
     // in the Sidebar, messenger contacts are being displayed
     // Sidebar is on the left of the page.
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
+    console.log(this.state.newMessage, this.state.newContact);
+    console.log("this.state.data ", this.state.data);
     let messagingSection = [];
 
     if (this.state.data.length > 0) {
@@ -272,20 +301,47 @@ export class Messenger extends Component {
       chat = (
         <div>
           <div className={classes.chatComponent}>
-            <div className={`${classes.sidebar} ${classes.sidebarPhoneNone}`}>
+            <div
+              className={
+                this.state.showSidebar
+                  ? `${classes.sidebar} ${classes.sidebarPhoneDisplay}`
+                  : `${classes.sidebar} ${classes.sidebarPhoneNone}`
+              }
+            >
+              <div className={classes.navbarOfSidbarForMobile}>
+                <Navbar
+                  navigateTo={"myProfile"}
+                  chatWith={
+                    Object.keys(this.state.data[this.state.selectedChat])[0]
+                  }
+                  showSidebarProperty={this.state.showSidebar}
+                  showSidebarFunction={this.showSidebarFunction}
+                />
+              </div>
               <Sidebar
                 data={this.state.data}
                 selectChat={this.selectChat}
                 selectedChat={this.state.selectedChat}
+                inputChangedHandler={this.inputChangedHandler}
+                newContact={this.state.newContact}
+                addNewContact={this.addNewContact}
               />
             </div>
 
-            <div className={`${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`}>
+            <div
+              className={
+                this.state.showSidebar
+                  ? `${classes.messagingSection} ${classes.messagingSectionPhoneNone}`
+                  : `${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`
+              }
+            >
               <Navbar
                 navigateTo={"myProfile"}
                 chatWith={
                   Object.keys(this.state.data[this.state.selectedChat])[0]
                 }
+                showSidebarProperty={this.state.showSidebar}
+                showSidebarFunction={this.showSidebarFunction}
               />
               <div className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
@@ -296,7 +352,9 @@ export class Messenger extends Component {
                 ></div>
               </div>
               <InputField
-                inputChangedHandler={this.inputChangedHandler}
+                inputChangedHandler={(event) =>
+                  this.inputChangedHandler(event, "newMessage")
+                }
                 sendMessage={this.sendMessage}
                 newMessage={this.state.newMessage}
               />
