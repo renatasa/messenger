@@ -1,5 +1,6 @@
 import React from "react";
 import SidebarItem from "../UI/SidebarItem/SidebarItem";
+import SidebarInputField from "../UI/SidebarInputField/SidebarInputField";
 
 export const sidebar = (props) => {
   // sidebar stateless component gets chatting data (as a prop)
@@ -8,11 +9,11 @@ export const sidebar = (props) => {
   // display contact names in Sidebar on the left of the page
 
   let chats = [];
-  let thisIsSelectedChat=false;
+  let thisIsSelectedChat = false;
   if (props.data.length > 0) {
     for (let i = 0; i < props.data.length; i++) {
-      if(props.selectedChat==i){
-thisIsSelectedChat=true;
+      if (props.selectedChat == i) {
+        thisIsSelectedChat = true;
       }
       chats.push(
         <SidebarItem
@@ -23,11 +24,20 @@ thisIsSelectedChat=true;
           selectedChat={thisIsSelectedChat}
         />
       );
-      thisIsSelectedChat=false;
+      thisIsSelectedChat = false;
     }
   }
 
-  return <div>{chats}</div>;
+  return (
+    <div>
+      <SidebarInputField
+        inputChangedHandler={props.inputChangedHandler}
+        newContact={props.newContact}
+        addNewContact={props.addNewContact}
+      />
+      {chats}
+    </div>
+  );
 };
 
 export default sidebar;

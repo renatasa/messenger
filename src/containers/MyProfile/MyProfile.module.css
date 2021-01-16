@@ -14,7 +14,7 @@
 
 .editProfilePhoto {
   font-size: 1.2rem;
-  
+  cursor: pointer;
   color: #009578;
  
   margin-top: 0.5rem;
@@ -22,7 +22,6 @@
 
 .photoDiv{
     text-align: center;
-    cursor: pointer;
 }
 
 .editProfilePhoto:active {

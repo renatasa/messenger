@@ -1,11 +1,16 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import * as actions from '../../store/actions/index';
-import {connect} from 'react-redux';
+import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
+import * as actions from "../../store/actions/index";
+import { connect } from "react-redux";
 import classes from "./LoginForm.module.css";
 
 export class LoginForm extends Component {
+  //email - email that user puts in LoginForm
+  // password - password that user puts in LoginForm
+  //isValid - boolean which becomes true when email and password is longer than 1 character
+  //error - error message which pops up when user tries to login without email and/or password
   state = {
     email: "",
     password: "",
@@ -13,33 +18,35 @@ export class LoginForm extends Component {
     error: null,
   };
 
+  // updates email and password when user types in input field
   inputChangedHandler = (event, inputName) => {
     event.preventDefault();
     this.setState({ [inputName]: event.target.value });
   };
 
+  //checks if email and password are longer than 1 character
   validateLoginData = () => {
     let isValid = true;
 
-    const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-    isValid = pattern.test(this.state.email) && isValid;
-    console.log("validateLogin ", isValid);
+    if (this.state.email.length > 0) {
+      isValid = true && isValid;
+    }
 
     if (this.state.password.length > 0) {
       isValid = true && isValid;
     }
-    console.log("validate email ", isValid);
 
     if (isValid) {
       this.setState({ isValid: isValid });
     } else {
       this.setState({
         isValid: isValid,
-        error: "Please enter email and password",
+        error: "Please enter valid email and password",
       });
     }
   };
 
+  //checks and submits email and password
   submitHandler = (event) => {
     event.preventDefault();
     this.validateLoginData();
@@ -50,6 +57,7 @@ export class LoginForm extends Component {
   };
 
   render() {
+    // inputs of Login form
     let inputs = (
       <div>
         <div>
@@ -68,12 +76,14 @@ export class LoginForm extends Component {
           placeholder="Password"
           value={this.state.password}
           onChange={(event) => this.inputChangedHandler(event, "password")}
+          onKeyPress={(event) => handleUserKeyPress(event, this.submitHandler)}
         />
       </div>
     );
 
+    // Login form itself
     let form = (
-      <div className={classes.container}>
+      <form className={classes.container}>
         <div>
           <div className={classes.formTitle}>Login</div>
           {inputs}
@@ -85,7 +95,7 @@ export class LoginForm extends Component {
             LOGIN
           </button>
         </div>
-      </div>
+      </form>
     );
 
     let chatRedirect = null;
@@ -94,16 +104,21 @@ export class LoginForm extends Component {
       chatRedirect = <Redirect to={"/messenger"} />;
       //email and password are being saved in redux store
       //from redux store data will be passed to messenger component
-      //messenger component will render only if email and password are not null, 
+      //messenger component will render only if email and password are not null,
       //else, user will be redirected to login component
-      //when user clicks logout, email and password will be set to null in redux store 
+      //when user clicks logout, email and password will be set to null in redux store
       //therefore user will be redirected to login form
       this.props.onSetEmailPassword(this.state.email, this.state.password);
-     // this.setState({email:null, password: null})
     }
 
+    // ErrorMessage - is visible only when user tries to login
+    // without providing email and password.
+    // When this.state.error becomes not null or false,
+    // this changes css class in ErrorMessage component
+    // therefore, error message becomes visible with transition.
+    // This error message dissapears in 2sec automatically,
+    // or user can turn it off by clicking X .
     return (
-    
       <div className={classes.formContainer}>
         {chatRedirect}
         {form}
@@ -113,16 +128,15 @@ export class LoginForm extends Component {
           resetError={this.resetError}
         />
       </div>
-      
     );
   }
 }
 
-
-const mapDispatchToProps=dispatch=>{
-  return{
-      onSetEmailPassword: (email, password)=>dispatch(actions.setEmailPassword(email, password))
-  }
-}
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetEmailPassword: (email, password) =>
+      dispatch(actions.setEmailPassword(email, password)),
+  };
+};
 
 export default connect(null, mapDispatchToProps)(LoginForm);
