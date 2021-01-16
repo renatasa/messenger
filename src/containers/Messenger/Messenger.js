@@ -220,9 +220,19 @@ export class Messenger extends Component {
         author: "me",
         date: timestamp,
       };
-      let newData = [];
 
-      this.deeplyCopyChatData(newData, newMessageObj);
+       let newData = JSON.parse(JSON.stringify(this.state.data));
+     //  let chatArray=[...Object.values(newData[this.state.selectedChat])[0]]
+     [...Object.values(newData[this.state.selectedChat])[0]].push(newMessageObj);
+     let contactName=Object.keys(this.state.data[this.state.selectedChat])
+      //  chatArray.push(newMessageObj);
+     console.log( newData[this.state.selectedChat][contactName])
+     newData[this.state.selectedChat][contactName].push(newMessageObj);
+     console.log( newData[this.state.selectedChat][contactName])
+//       console.log(newData);
+
+     // this.deeplyCopyChatData(newData, newMessageObj);
+
 
       this.sendPutRequest(newData, "newMessage");
     }
@@ -230,7 +240,7 @@ export class Messenger extends Component {
 
     //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
-    if(this.state.addNewContact!==""){
+    if(this.state.newContact!==""){
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
@@ -248,7 +258,6 @@ export class Messenger extends Component {
   };
 
   showSidebarFunction = () => {
-    console.log("showSidebar");
     this.setState({ showSidebar: true });
   };
 
@@ -262,8 +271,6 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
-    console.log(this.state.newMessage, this.state.newContact);
-    console.log("this.state.data ", this.state.data);
     let messagingSection = [];
 
     if (this.state.data.length > 0) {

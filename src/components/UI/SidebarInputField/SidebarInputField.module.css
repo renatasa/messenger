@@ -1,20 +1,17 @@
-
 .sidebarAddContact {
-    display: flex;
+  display: flex;
 }
 .sidebarInputField {
-
   border: 0.1rem solid #eeeeee;
   border-radius: 0.8rem;
- margin-left: .3rem;
- padding: 0rem 0rem 0rem .5rem;
-width: 95%;
+  margin: 0.3rem 0rem 0.3rem 0.3rem;
+  padding: 0rem 0rem 0rem 0.5rem;
+  width: 95%;
+  outline: none;
 }
 
-
-
 .addContact {
-    width: 5%;
+  width: 5%;
   color: #787878;
   font-size: 2rem;
   margin-right: 2rem;
