@@ -28,7 +28,6 @@
   border-radius: 0.4rem;
   border: 1px solid #dddddd;
   background: #eeeeee;
-  transition: background 0.2s, border-color 0.2s;
   margin-bottom: 1rem;
   text-align: center;
 }

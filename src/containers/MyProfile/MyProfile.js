@@ -16,13 +16,12 @@ export class MyProfile extends Component {
       ["Location", "Lithuania", false],
       ["Education", "self tought", false],
       ["Jobs", "developer", false],
-    ],
+    ]
   };
-
 
   // copies array of data of all input fields
   // updates with array of data of single selected input field
-  // updates state. 
+  // updates state.
   // This function is being used in inputChangedHandler.
   updatedDetailsInState = (updatedDetail, index) => {
     let updatedDetails = [];
@@ -37,15 +36,15 @@ export class MyProfile extends Component {
     // creates new array for copying and updating data of single input field
     let updatedDetail = [];
 
-    // in this case, 
+    // in this case,
     // user input is set to be not longer than 20 characters.
-    // if user inputs more than 20 characters, this throws an error, which 
+    // if user inputs more than 20 characters, this throws an error, which
     // is shown near input field and dissapears
     // when user input becoms less than 20 characters
     if (e.target.value.length > 20) {
       // copies existing array of single input field data
       updatedDetail = [...this.state.details[index]];
-      // assigns third value of array to true, 
+      // assigns third value of array to true,
       // this makes error message to appear
       updatedDetail[2] = true;
       // updates data of all input fields with newly updated data of single input field
@@ -55,7 +54,7 @@ export class MyProfile extends Component {
       updatedDetail.push(this.state.details[index][0]);
       // pushes new value of selected input field
       updatedDetail.push(e.target.value);
-      // third element of single input field array is false when 
+      // third element of single input field array is false when
       // input length is =<20 charactes, in this case no error is being thrown
       updatedDetail.push(false);
       this.updatedDetailsInState(updatedDetail, index);
@@ -72,10 +71,10 @@ export class MyProfile extends Component {
     }
 
     let myProfileDetails = null;
-// example of single profile details array - ["Full Name", "John Doe", false]
+    // example of single profile details array - ["Full Name", "John Doe", false]
     myProfileDetails = this.state.details.map((detail, index) => (
       <ProfileDetails
-        label={detail[0]} //example - Full Name 
+        label={detail[0]} //example - Full Name
         details={detail[1]} // example - John Doe
         inputChangedHandler={this.inputChangedHandler}
         index={index}
@@ -87,9 +86,7 @@ export class MyProfile extends Component {
     return (
       <div>
         {redirectToLogin}
-        <Navbar
-          navigateTo={"/messenger"}
-        />
+        <Navbar navigateTo={"/messenger"} />
 
         <div className={classes.myProfile}>
           <div className={classes.photoDiv}>

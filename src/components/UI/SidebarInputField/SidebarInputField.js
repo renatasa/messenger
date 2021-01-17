@@ -15,7 +15,7 @@ export const sidebarInputField = (props) => {
         onKeyPress={(event) => handleUserKeyPress(event, props.addNewContact)}
       ></input>
       <div className={classes.addContact} onClick={props.addNewContact}>
-        <FontAwesomeIcon icon={faPlusCircle} />{" "}
+        <FontAwesomeIcon icon={faPlusCircle} />
       </div>
     </div>
   );

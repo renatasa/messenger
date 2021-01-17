@@ -8,7 +8,6 @@ import Navbar from "../../components/Navbar/Navbar";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
-import ScrollToBottom from 'react-scroll-to-bottom';
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -16,15 +15,12 @@ export class Messenger extends Component {
   // messenger displays first chat (received from backend data array) in Messaging section
   // therefore selectedChat by default is 0
   // newMessage - this is text that user types in input field
+  // newContact - text that user types in Sidebar input field when adding new contact
   // errorLoadingChats - HTTP GET request error
   // errorSendingMessage - HTTP POST request error
-
-  // constructor(props) {
-  //   super(props);
-  //   this.exploreOurProductsRef = React.createRef();
-  //   this.todaySpecialRef = React.createRef();
-  //   this.lastMessageRef = React.createRef();
-  // }
+  // errorAddingContact - HTTP POST request error
+  // errorSendingMessage and errorAddingContact differ in css
+  // showSidebar - used in mobile responsie devices, when switching between sidebar view and chat view
 
   state = {
     data: null,
@@ -33,15 +29,9 @@ export class Messenger extends Component {
     newContact: "",
     errorLoadingChats: null,
     errorSendingMessage: null,
-    errorAddingContact:null,
+    errorAddingContact: null,
     showSidebar: true,
-    isMounted: false
   };
-
-  // scrollToLastMessage = () => {
-  //  console.log('scrolling to last message');
-  //   window.scrollTo(0, this.lastMessageRef)
-  // } 
 
   chatsDataGetRequest = () => {
     let req = new XMLHttpRequest();
@@ -87,14 +77,9 @@ export class Messenger extends Component {
     req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
     req.send(newDataJson);
   };
-
-  // when component mounts,
-  // componnetDidMount sends HTTP request to get
-  // chatting data (contact names and chats) from backend,
-  // chatting data is then saved as this.state.data.
 
   // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
   // and chat UI if there are any new messages sent by other users. It is set to execute every 2s.
@@ -102,8 +87,6 @@ export class Messenger extends Component {
   // currently this.sendContinuousRequestsUpdateChats  and componentWillUnmount are commented
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
-    //this.scrollToBottom();
-    // if(this.state.data!=null){this.scrollToLastMessage()};
     this.chatsDataGetRequest();
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
@@ -111,23 +94,14 @@ export class Messenger extends Component {
   }
 
   componentWillUnmount() {
-  //  clearInterval(this.sendContinuousRequestsUpdateChats);
-
+    //  clearInterval(this.sendContinuousRequestsUpdateChats);
   }
 
-  // scrolls to latest messages in chat
-  // componentDidUpdate() {
-  //   if(this.state.errorLoadingChats==""){
-  //     this.scrollToBottom();
-  //   }
-
-  // }
-
   checkRequestStatusUpdateState = (req, newData, error, clearInput) => {
-    // if request status !=200 , this.state.data does not update, this.state.error updates
-    // when fetching data from backend, emptying user's input fields in UI is undesirable
-    // when sending new text message, we want to set this.state.newMessage=""
-    // after new contact is added, we want to set this.state.newContact=""
+    // if request status !=200 , this.state.data does not update, one of error properties in state updates
+    // when fetching data from backend, emptying user's input fields in UI is undesirable, therefore it is not updated with setState
+    // when sending new text message, we want to clear input field after successful request (set this.state.newMessage="")
+    // after new contact is added, we want to  clear input field after successful request (set this.state.newContact="")
     if (req.status !== 200) {
       this.setState({ [error]: JSON.parse(req.response).message });
     } else if (clearInput == "do not clear input") {
@@ -150,16 +124,15 @@ export class Messenger extends Component {
   // updates and displays chat with selected user
   selectChat = (index) => {
     this.setState({ selectedChat: index });
-    // this.scrollToLastMessage();
 
+    // following function hides sidebar on mobile devices
     // when this.state.showSidebar is false,
     // Sidebar is assigned CSS class with display: none property
-    //this function hides sidebar on mobile devices
     this.hideSidebar();
   };
 
   // updates newMessage property in state object
-  // when user starts typing new message into InputField
+  // when user starts typing new message or adding new contact into textarea or input field
   inputChangedHandler = (event, inputName) => {
     event.preventDefault();
     this.setState({ [inputName]: event.target.value });
@@ -189,7 +162,7 @@ export class Messenger extends Component {
     return timestamp;
   };
 
-  //checks if this.state.newMessage is not empty, updates backend and UI
+  //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
       let timestamp = this.createTimeStamp();
@@ -217,15 +190,12 @@ export class Messenger extends Component {
     }
   };
 
-  scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView();
-  };
-
   resetError = (errorType) => {
-    console.log("resetError");
     this.setState({ [errorType]: null });
   };
 
+  // showSidebarFunction and hideSidebar are used in mobile devices for switching
+  // between sidebar view and chat view
   showSidebarFunction = () => {
     this.setState({ showSidebar: true });
   };
@@ -239,8 +209,6 @@ export class Messenger extends Component {
     // Sidebar is on the left of the page.
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
-
-    console.log(this.state.errorSendingMessage);
 
     let messagingSection = [];
 
@@ -260,7 +228,6 @@ export class Messenger extends Component {
     }
 
     let chat = null;
-
     // user logs in by providing email and password
     // if user tries to access Messenger component
     // without logging in first,
@@ -270,29 +237,6 @@ export class Messenger extends Component {
     if (!this.props.email || !this.props.password) {
       redirectToLogin = <Redirect to="/" />;
     }
-
-    // If chats data is fetched from backend into state,
-    // messenger componnet displays chats.
-    // <div ref={(el) => {this.messagesEnd = el; }}  ></div> - this is a dummy div which is used for scrolling down to the end of chat
-
-    // checking if component is mounted prevents React state update on an unmounted component
-    let scrollToDiv = null;
-
-    if(this.state.data!=null){
-     scrollToDiv= <div  ref={this.lastMessageRef}  ></div>
-    }
-
-
-      // scrollToDiv = (
-      //   <div
-      //     ref={(el) => {
-      //       this.messagesEnd = el;
-      //     }}
-      //   ></div>
-      // );
-
-          
-    
 
     if (this.state.data !== null) {
       chat = (
@@ -343,19 +287,14 @@ export class Messenger extends Component {
                 showSidebarProperty={this.state.showSidebar}
                 showSidebarFunction={this.showSidebarFunction}
               />
-          
-              <ScrollToBottom className={`${classes.messagingSectionMessages} `}>
+              <div className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
-                {/* <div  ref={this.lastMessageRef}  ></div> */}              
-
-                <ErrorMessage
-                  error={this.state.errorSendingMessage}
-                  resetError={this.resetError}
-                  errorType={"errorSendingMessage"}
-                />
-                 </ScrollToBottom>
-              
-              
+              </div>
+              <ErrorMessage
+                error={this.state.errorSendingMessage}
+                resetError={this.resetError}
+                errorType={"errorSendingMessage"}
+              />
               <InputField
                 inputChangedHandler={(event) =>
                   this.inputChangedHandler(event, "newMessage")

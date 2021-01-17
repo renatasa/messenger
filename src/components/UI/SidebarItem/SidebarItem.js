@@ -3,13 +3,15 @@ import classes from "./SidebarItem.module.css";
 
 export const sidebarItem = (props) => {
   //sideBarItem stateles componnet
-  //gets contact names as props from Sidebar component
-  //and displays them
-  //css modules are used for styling
+  //gets contact names as props from Sidebar component and displays them
 
   return (
     <div
-      className={props.selectedChat ? `${classes.contactName} ${classes.selectedChat}` : classes.contactName}
+      className={
+        props.selectedChat
+          ? `${classes.contactName} ${classes.selectedChat}`
+          : classes.contactName
+      }
       onClick={() => props.selectChat(props.index)}
     >
       {props.contactName}

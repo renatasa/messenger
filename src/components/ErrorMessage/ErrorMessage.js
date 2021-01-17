@@ -4,30 +4,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const errorMessage = (props) => {
-  console.log(props.error);
   let error = null;
   if (props.error) {
     error = props.error;
   }
 
-  if(props.error && (props.errorType=='errorSendingMessage' || props.errorType=='errorAddingContact' || props.errorType=='warning')){
+  if (
+    props.error &&
+    (props.errorType == "errorSendingMessage" ||
+      props.errorType == "errorAddingContact" ||
+      props.errorType == "warning")
+  ) {
     setTimeout(() => props.resetError(props.errorType), 2000);
   }
 
-  // if(props.error && props.errorType=='warning'){
-  //   setTimeout(() => props.resetError(), 2000);
-  // }
-
-  console.log(props);
-
   switch (props.errorType) {
     // shows error message when HTTP GET request fails to get chats from backend ( request status is !==200)
-    // in Messenger's statefull componnet componentDidMount
+    // in Messenger's statefull componnet
     case "errorLoadingChats":
       return (
         <div
           className={
-            props.error ? `${classes.alertItemLogin} ${classes.alertItemLoginError}` : `${classes.inactiveLogin}`
+            props.error
+              ? `${classes.alertItemLogin} ${classes.alertItemLoginError}`
+              : `${classes.inactiveLogin}`
           }
         >
           <div className={classes.data}>
@@ -37,31 +37,39 @@ export const errorMessage = (props) => {
             <p className={classes.sub}>{error ? error : undefined}</p>
             <p>Please contact our support team </p>
           </div>
-
         </div>
       );
 
-      // shows error message in chat, when new message was not sent (HTTP PUT request status !==200)
-      case "errorSendingMessage":
-        console.log('errorsendingmsg');
+    // shows error message in chat, when new message was not sent (HTTP PUT request status !==200)
+    case "errorSendingMessage":
       return (
-        <div className={props.error ? classes.alertItemSendingMessage : classes.inactiveAlertItemSendingMessage}>
-        Message not sent
-      </div>
+        <div
+          className={
+            props.error
+              ? classes.alertItemSendingMessage
+              : classes.inactiveAlertItemSendingMessage
+          }
+        >
+          Message not sent
+        </div>
       );
 
-      // shows error message in chat, when new contact was not successfully added (HTTP PUT request status !==200)
-      case "errorAddingContact":
-        console.log('error adding contact');
+    // shows error message in chat, when new contact was not successfully added (HTTP PUT request status !==200)
+    case "errorAddingContact":
       return (
-        <div className={props.error ? classes.alertItemSendingMessage : classes.inactiveAlertItemSendingMessage}>
-        Contact not added
-      </div>
+        <div
+          className={
+            props.error
+              ? `${classes.alertItemSendingMessage} ${classes.errorAddingContact}`
+              : classes.inactiveAlertItemSendingMessage
+          }
+        >
+          Contact not added
+        </div>
       );
 
-
-      // shows error message (warning) when user tries to login 
-      // without providing email and password
+    // shows error message (warning) when user tries to login
+    // without providing email and password
     case "warning":
       return (
         <div

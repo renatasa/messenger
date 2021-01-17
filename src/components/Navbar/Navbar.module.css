@@ -1,82 +1,81 @@
-.navbar{
-     height: 8%; 
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    font-size: 1rem;
-    border-bottom: 0.2rem solid #ececec;
+.navbar {
+  height: 8%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 1rem;
+  border-bottom: 0.2rem solid #ececec;
 }
 
-.navbarMyProfile{
-    border-bottom: transparent;
+.navbarMyProfile {
+  border-bottom: transparent;
 }
 
-.myProfile{
-    background-color: #787878;
-    border-radius: .4rem;
-    padding: .4rem .6rem;
-    margin-right: 1rem;
-    cursor: pointer;
-    color: #ffffff;
+.myProfile {
+  background-color: #787878;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  margin-right: 1rem;
+  cursor: pointer;
+  color: #ffffff;
 }
 
-.myProfile:hover{
-    background-color: #494949;
-    transition: background-color .3s ease;
+.myProfile:hover {
+  background-color: #494949;
+  transition: background-color 0.3s ease;
 }
 
-.button:active{
-transform: scale(0.98);
+.button:active {
+  transform: scale(0.98);
 }
 
-.logout{
-    color:  #787878;
-    font-size: 2.5rem;
-    margin-right: 2rem;
-    margin-left: 1rem;
-    cursor: pointer;
+.logout {
+  color: #787878;
+  font-size: 2.5rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  cursor: pointer;
 }
 
-.logout:active, .logout:hover{
-    color: #494949;
+.logout:active,
+.logout:hover {
+  color: #494949;
 }
 
-a{text-decoration: none; color: #ffffff;}
-
-.chatWith{
-    color: #009578;
-    font-weight: bold;
-    font-size: 1rem;
-    margin-right: 2rem;
+a {
+  text-decoration: none;
+  color: #ffffff;
 }
 
-.showButton{
-    display: none;
+.chatWith {
+  color: #009578;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 2rem;
+}
+
+.showButton {
+  display: none;
 }
 
 @media (max-width: 750px) {
-    .showButton{
-        display: block;
-        color: #787878;
-        border-radius: .4rem;
-        margin-right: 1rem;
-        padding: .4rem ;
-        cursor: pointer;
-        background-color: #ffffff;
-        font-size: 2rem;
-    }
-    
-    .showButton:hover{
-        color: #494949;
-        transition: background-color .3s ease;
-    }
-    
-    .showButton:active{
-    transform: scale(0.98);
-    }
-
-    
-
+  .showButton {
+    display: block;
+    color: #787878;
+    border-radius: 0.4rem;
+    margin-right: 1rem;
+    padding: 0.4rem;
+    cursor: pointer;
+    background-color: #ffffff;
+    font-size: 2rem;
   }
 
+  .showButton:hover {
+    color: #494949;
+    transition: background-color 0.3s ease;
+  }
 
+  .showButton:active {
+    transform: scale(0.98);
+  }
+}
