@@ -7,10 +7,10 @@ import { connect } from "react-redux";
 import classes from "./LoginForm.module.css";
 
 export class LoginForm extends Component {
-  //email - email that user puts in LoginForm
+  // email - email that user puts in LoginForm
   // password - password that user puts in LoginForm
-  //isValid - boolean which becomes true when email and password is longer than 1 character
-  //error - error message which pops up when user tries to login without email and/or password
+  // isValid - boolean which becomes true when email and password is longer than 1 character
+  // error - error message which pops up when user tries to login without email and/or password
   state = {
     email: "",
     password: "",
@@ -24,16 +24,12 @@ export class LoginForm extends Component {
     this.setState({ [inputName]: event.target.value });
   };
 
-  //checks if email and password are longer than 1 character
+  // checks if email and password are longer than 1 character
   validateLoginData = () => {
-    let isValid = true;
+    let isValid = false;
 
-    if (this.state.email.length > 0) {
-      isValid = true && isValid;
-    }
-
-    if (this.state.password.length > 0) {
-      isValid = true && isValid;
+    if (this.state.email.length > 0 && this.state.password.length > 0) {
+      isValid = true;
     }
 
     if (isValid) {
@@ -46,7 +42,7 @@ export class LoginForm extends Component {
     }
   };
 
-  //checks and submits email and password
+  // checks and submits email and password
   submitHandler = (event) => {
     event.preventDefault();
     this.validateLoginData();
@@ -57,6 +53,7 @@ export class LoginForm extends Component {
   };
 
   render() {
+    console.log(this.state);
     // inputs of Login form
     let inputs = (
       <div>
@@ -81,7 +78,6 @@ export class LoginForm extends Component {
       </div>
     );
 
-    // Login form itself
     let form = (
       <form className={classes.container}>
         <div>
@@ -102,12 +98,12 @@ export class LoginForm extends Component {
 
     if (this.state.isValid) {
       chatRedirect = <Redirect to={"/messenger"} />;
-      //email and password are being saved in redux store
-      //from redux store data will be passed to messenger component
-      //messenger component will render only if email and password are not null,
-      //else, user will be redirected to login component
-      //when user clicks logout, email and password will be set to null in redux store
-      //therefore user will be redirected to login form
+      // email and password are being saved in redux store
+      // from redux store data will be passed to messenger component
+      // messenger component will render only if email and password are not null,
+      // else, user will be redirected to login component
+      // when user clicks logout, email and password will be set to null in redux store
+      // therefore user will be redirected to login form
       this.props.onSetEmailPassword(this.state.email, this.state.password);
     }
 

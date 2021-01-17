@@ -10,7 +10,6 @@
   overflow-y: scroll;
 }
 
-
 .messagingSection {
   width: 75%;
   font-size: 2rem;
@@ -20,23 +19,22 @@
   height: 100vh;
 }
 
-.messagingSectionMessages{
-      border: 1px solid red;
-      height: 78%;
-      overflow-y: hidden;
+.messagingSectionMessages {
+  height: 80%;
+  overflow-y: scroll;
 }
 
-.navbarOfSidbarForMobile{
+.navbarOfSidbarForMobile {
   display: none;
 }
 
-.loadingChatsError{
+.loadingChatsError {
   display: flex;
   justify-content: center;
   margin-top: 10%;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 770px) {
   .sidebarPhoneNone {
     display: none;
   }
@@ -51,20 +49,15 @@
     width: 100%;
     left: 0%;
   }
-  
-  .messagingSectionMessagesPhoneDisplay{
-    border: 1px solid red;
+
+  .messagingSectionMessagesPhoneDisplay {
     height: 78%;
-    /* overflow-y: scroll; */
-}
+  }
   .messagingSectionPhoneNone {
-display: none;
+    display: none;
   }
 
-  .navbarOfSidbarForMobile{
+  .navbarOfSidbarForMobile {
     display: block;
   }
-
-
 }
-  

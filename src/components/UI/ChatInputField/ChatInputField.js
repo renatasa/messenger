@@ -1,11 +1,11 @@
 import React from "react";
-import handleUserKeyPress from '../../Utilities/UtilityFunction';
+import handleUserKeyPress from "../../Utilities/UtilityFunction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import classes from "./ChatInputField.module.css";
 
 export const inputField = (props) => {
-  // this is input field for typing new text message
+  // this is textarea for typing new text message
   // it sends HTTP PUT request and updates this.state.data in messenger component
   // when user presses ENTER of clicks faPaperPlane icon
 
