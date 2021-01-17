@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { faComments } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBook } from '@fortawesome/free-solid-svg-icons';
 import * as actions from '../../store/actions/index';
 import {connect} from 'react-redux';
 import { NavLink } from 'react-router-dom'
@@ -14,27 +15,31 @@ export const navbar = (props) => {
   // from nabar in MyProfile user can navigate to messenger
   // navbar updates its UI when it receives navigateTo prop
 
-  let navContent=null;
-  let navContentForMobileDevice=null;
+  let navButtonForMobileDevice=null;
   // chatWith - name of contact that user is currently chatting with 
   // is displayed in Messenger component NavBar
   let chatWith=null;
+  let chooseIcon =null;
 
-  if(props.navigateTo=='myProfile'){
-    navContent=<NavLink to="/myprofile"><FontAwesomeIcon icon={faUser}/></NavLink>
-    navContentForMobileDevice=<div className={props.showSidebarProperty? `${classes.mobileDevice}` : `${classes.myProfile} ${classes.button}`} onClick={props.showSidebarFunction}><FontAwesomeIcon icon={faComments} onClick={props.goToMessenger}/></div>
+  if(props.navigateTo=='/myProfile'){
+    chooseIcon = faUser 
+    if(props.showSidebarProperty){
+      navButtonForMobileDevice=null;
+    }else{
+      navButtonForMobileDevice=<div className={classes.showButton} onClick={props.showSidebarFunction}><FontAwesomeIcon icon={faBook}/></div>
+    }
     chatWith=<div className={classes.chatWith}>{props.chatWith}</div>
   }
 
-  if(props.navigateTo=='messenger'){
-    navContent=<NavLink to="/messenger"><FontAwesomeIcon icon={faComments} onClick={props.goToMessenger}/></NavLink>
+  if(props.navigateTo=='/messenger'){
+    chooseIcon=faComments
   }
 
   return (
-    <div className={props.navigateTo=="messenger" ? `${classes.navbar} ${classes.navbarMyProfile}` : classes.navbar }>
+    <div className={props.navigateTo=="/messenger" ? `${classes.navbar} ${classes.navbarMyProfile}` : classes.navbar }>
       {chatWith}
-      {navContentForMobileDevice}
-            <div className={`${classes.myProfile} ${classes.button}`}>{navContent}</div>
+      {navButtonForMobileDevice}
+      <NavLink to={props.navigateTo}><div className={`${classes.myProfile} ${classes.button}`}><FontAwesomeIcon icon={chooseIcon}/></div></NavLink>
             <div ><FontAwesomeIcon icon={faSignOutAlt} className={`${classes.logout} ${classes.button}`} onClick={props.onLogout}/></div>
    </div>
   );

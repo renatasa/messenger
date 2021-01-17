@@ -10,7 +10,6 @@ export class MyProfile extends Component {
   // second element in array is too large and shows error message
   // in Profile details component
   state = {
-    goToMessenger: false,
     details: [
       ["Full Name", "John Doe", false],
       ["Phone Number", "1234567", false],
@@ -20,9 +19,6 @@ export class MyProfile extends Component {
     ],
   };
 
-  redirectToMessenger = () => {
-    this.setState({ goToMessenger: true });
-  };
 
   // copies array of data of all input fields
   // updates with array of data of single selected input field
@@ -67,13 +63,6 @@ export class MyProfile extends Component {
   };
 
   render() {
-    // when user clicks chats icon in navbar
-    // user is redirected to Messenger component
-    let redirectToMessenger = null;
-    if (this.state.goToMessenger == true) {
-      redirectToMessenger = <Redirect to="/messenger" />;
-    }
-
     // to access MyProfile component, user has to login first
     // if user tries to access MyProfile wihout logging in first,
     // he is redirected to LoginForm component
@@ -91,16 +80,15 @@ export class MyProfile extends Component {
         inputChangedHandler={this.inputChangedHandler}
         index={index}
         error={detail[2]} // example - false
+        key={index}
       />
     ));
 
     return (
       <div>
-        {redirectToMessenger}
         {redirectToLogin}
         <Navbar
-          goToMessenger={this.state.redirectToMessenger}
-          navigateTo={"messenger"}
+          navigateTo={"/messenger"}
         />
 
         <div className={classes.myProfile}>

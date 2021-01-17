@@ -5,7 +5,6 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
-import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
@@ -27,6 +26,7 @@ export class Messenger extends Component {
     errorLoadingChats: null,
     errorSendingMessage: null,
     showSidebar: true,
+    isMounted: false
   };
 
   chatsDataGetRequest = () => {
@@ -73,7 +73,7 @@ export class Messenger extends Component {
     req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
     req.send(newDataJson);
   };
 
@@ -100,36 +100,28 @@ export class Messenger extends Component {
 
   //scrolls to latest messages in chat
   componentDidUpdate() {
-    this.scrollToBottom();
+     this.scrollToBottom();
   }
 
-  checkRequestStatusUpdateState = (
-    req,
-    newData,
-    error,
-    clearInput
-  ) => {
+  checkRequestStatusUpdateState = (req, newData, error, clearInput) => {
     // if request status !=200 , this.state.data does not update, this.state.error updates
-    if (req.status !== 200) {
-      this.setState({ [error]: JSON.parse(req.response).message });
-    }
-
-    // when fetching data from backend, emptying user's input fields in UI is undesirable
+        // when fetching data from backend, emptying user's input fields in UI is undesirable
     // when sending new text message, we want to set this.state.newMessage=""
     // after new contact is added, we want to set this.state.newContact=""
-    if (clearInput == "do not clear input") {
+    if (req.status !== 200) {
+      this.setState({ [error]: JSON.parse(req.response).message });
+    } else if (clearInput == "do not clear input") {
       this.setState({
         data: newData,
         [error]: null,
       });
-    } else{
+    } else {
       this.setState({
         data: newData,
         [clearInput]: "",
         [error]: null,
       });
     }
- 
   };
 
   // when user clicks on a contact name in the Sidebar,
@@ -176,41 +168,6 @@ export class Messenger extends Component {
     return timestamp;
   };
 
-  //this function is used in sendMessage function
-  deeplyCopyChatData = (newData, newMessageObj) => {
-    // function for deeply copying and immutably updating state data
-    // outer for loop loops through contacts (e.g. John, Kate etc)
-    for (let i = 0; i < this.state.data.length; i++) {
-      let deepCopy = [];
-      // key of this object is person name - e.g. John, Kate etc.
-      // value of this object is array of messages of chatting with that person
-      let updatedPerson = {};
-
-      // Inner for loop loops though all messages of a chat and copies them to deepCopy array.
-      // When it finds chat with currently selected contact (which is displayed in messaging section of Messenger component)
-      // (for example - messages of chatting with John)
-      // it copies messages of that chat to deepCopy array and updates with new message
-      for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
-        // copies all messages in chat
-        console.log("inner for");
-        deepCopy.push(Object.values(this.state.data[i])[0][z]);
-      }
-
-      // if finds currently selected chat - pushes new message
-      if (i == this.state.selectedChat) {
-        deepCopy.push(newMessageObj);
-      }
-
-      let person = Object.keys(this.state.data[i])[0];
-      updatedPerson = {
-        [person]: deepCopy,
-      };
-      newData.push(updatedPerson);
-    }
-
-    return newData;
-  };
-
   //checks if this.state.newMessage is not empty, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
@@ -221,32 +178,22 @@ export class Messenger extends Component {
         date: timestamp,
       };
 
-       let newData = JSON.parse(JSON.stringify(this.state.data));
-     //  let chatArray=[...Object.values(newData[this.state.selectedChat])[0]]
-     [...Object.values(newData[this.state.selectedChat])[0]].push(newMessageObj);
-     let contactName=Object.keys(this.state.data[this.state.selectedChat])
-      //  chatArray.push(newMessageObj);
-     console.log( newData[this.state.selectedChat][contactName])
-     newData[this.state.selectedChat][contactName].push(newMessageObj);
-     console.log( newData[this.state.selectedChat][contactName])
-//       console.log(newData);
-
-     // this.deeplyCopyChatData(newData, newMessageObj);
-
+      let newData = JSON.parse(JSON.stringify(this.state.data));
+      let contactName = Object.keys(this.state.data[this.state.selectedChat]);
+      newData[this.state.selectedChat][contactName].push(newMessageObj);
 
       this.sendPutRequest(newData, "newMessage");
     }
   };
 
-    //checks if this.state.newContact is not empty, updates backend and UI
+  //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
-    if(this.state.newContact!==""){
+    if (this.state.newContact !== "") {
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
       this.sendPutRequest(newData, "newContact");
     }
-    
   };
 
   scrollToBottom = () => {
@@ -270,6 +217,8 @@ export class Messenger extends Component {
     // Sidebar is on the left of the page.
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
+
+    console.log(this.state.errorSendingMessage)
 
     let messagingSection = [];
 
@@ -317,7 +266,7 @@ export class Messenger extends Component {
             >
               <div className={classes.navbarOfSidbarForMobile}>
                 <Navbar
-                  navigateTo={"myProfile"}
+                  navigateTo={"/myProfile"}
                   chatWith={
                     Object.keys(this.state.data[this.state.selectedChat])[0]
                   }
@@ -343,7 +292,7 @@ export class Messenger extends Component {
               }
             >
               <Navbar
-                navigateTo={"myProfile"}
+                navigateTo={"/myProfile"}
                 chatWith={
                   Object.keys(this.state.data[this.state.selectedChat])[0]
                 }
