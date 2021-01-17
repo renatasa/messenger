@@ -17,6 +17,7 @@
     padding: .4rem .6rem;
     margin-right: 1rem;
     cursor: pointer;
+    color: #ffffff;
 }
 
 .myProfile:hover{
@@ -49,11 +50,31 @@ a{text-decoration: none; color: #ffffff;}
     margin-right: 2rem;
 }
 
+.showButton{
+    display: none;
+}
 
 @media (max-width: 750px) {
-    .mobileDevice{
-        display: none
+    .showButton{
+        display: block;
+        color: #787878;
+        border-radius: .4rem;
+        margin-right: 1rem;
+        padding: .4rem ;
+        cursor: pointer;
+        background-color: #ffffff;
+        font-size: 2rem;
     }
+    
+    .showButton:hover{
+        color: #494949;
+        transition: background-color .3s ease;
+    }
+    
+    .showButton:active{
+    transform: scale(0.98);
+    }
+
     
 
   }

@@ -23,11 +23,17 @@
 .messagingSectionMessages{
       border: 1px solid red;
       height: 78%;
-      overflow-y: scroll;
+      overflow-y: hidden;
 }
 
 .navbarOfSidbarForMobile{
   display: none;
+}
+
+.loadingChatsError{
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
 }
 
 @media (max-width: 750px) {

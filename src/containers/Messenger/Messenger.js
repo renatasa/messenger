@@ -5,10 +5,10 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
-import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -19,15 +19,29 @@ export class Messenger extends Component {
   // errorLoadingChats - HTTP GET request error
   // errorSendingMessage - HTTP POST request error
 
+  // constructor(props) {
+  //   super(props);
+  //   this.exploreOurProductsRef = React.createRef();
+  //   this.todaySpecialRef = React.createRef();
+  //   this.lastMessageRef = React.createRef();
+  // }
+
   state = {
-    data: [],
+    data: null,
     selectedChat: 0,
     newMessage: "",
     newContact: "",
     errorLoadingChats: null,
     errorSendingMessage: null,
+    errorAddingContact:null,
     showSidebar: true,
+    isMounted: false
   };
+
+  // scrollToLastMessage = () => {
+  //  console.log('scrolling to last message');
+  //   window.scrollTo(0, this.lastMessageRef)
+  // } 
 
   chatsDataGetRequest = () => {
     let req = new XMLHttpRequest();
@@ -51,7 +65,7 @@ export class Messenger extends Component {
     req.send();
   };
 
-  sendPutRequest = (newData, clearInput) => {
+  sendPutRequest = (newData, clearInput, updateError) => {
     let newDataObj = {
       data: newData,
     };
@@ -64,7 +78,7 @@ export class Messenger extends Component {
         this.checkRequestStatusUpdateState(
           req,
           newData,
-          "errorSendingMessage",
+          updateError,
           clearInput
         );
       }
@@ -73,7 +87,7 @@ export class Messenger extends Component {
     req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
     req.send(newDataJson);
   };
 
@@ -85,51 +99,49 @@ export class Messenger extends Component {
   // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
   // and chat UI if there are any new messages sent by other users. It is set to execute every 2s.
   // this.sendContinuousRequestsUpdateChats is eliminated, when Messenger component unmounts.
-  // currently this.sendContinuousRequestsUpdateChats  and componentWIllUnmount are commented
+  // currently this.sendContinuousRequestsUpdateChats  and componentWillUnmount are commented
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
+    //this.scrollToBottom();
+    // if(this.state.data!=null){this.scrollToLastMessage()};
     this.chatsDataGetRequest();
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
     // }, 2000);
   }
 
-  // componentWillUnmount() {
-  //   clearInterval(this.sendContinuousRequestsUpdateChats);
-  // }
+  componentWillUnmount() {
+  //  clearInterval(this.sendContinuousRequestsUpdateChats);
 
-  //scrolls to latest messages in chat
-  componentDidUpdate() {
-    this.scrollToBottom();
   }
 
-  checkRequestStatusUpdateState = (
-    req,
-    newData,
-    error,
-    clearInput
-  ) => {
-    // if request status !=200 , this.state.data does not update, this.state.error updates
-    if (req.status !== 200) {
-      this.setState({ [error]: JSON.parse(req.response).message });
-    }
+  // scrolls to latest messages in chat
+  // componentDidUpdate() {
+  //   if(this.state.errorLoadingChats==""){
+  //     this.scrollToBottom();
+  //   }
 
+  // }
+
+  checkRequestStatusUpdateState = (req, newData, error, clearInput) => {
+    // if request status !=200 , this.state.data does not update, this.state.error updates
     // when fetching data from backend, emptying user's input fields in UI is undesirable
     // when sending new text message, we want to set this.state.newMessage=""
     // after new contact is added, we want to set this.state.newContact=""
-    if (clearInput == "do not clear input") {
+    if (req.status !== 200) {
+      this.setState({ [error]: JSON.parse(req.response).message });
+    } else if (clearInput == "do not clear input") {
       this.setState({
         data: newData,
         [error]: null,
       });
-    } else{
+    } else {
       this.setState({
         data: newData,
         [clearInput]: "",
         [error]: null,
       });
     }
- 
   };
 
   // when user clicks on a contact name in the Sidebar,
@@ -138,6 +150,7 @@ export class Messenger extends Component {
   // updates and displays chat with selected user
   selectChat = (index) => {
     this.setState({ selectedChat: index });
+    // this.scrollToLastMessage();
 
     // when this.state.showSidebar is false,
     // Sidebar is assigned CSS class with display: none property
@@ -176,41 +189,6 @@ export class Messenger extends Component {
     return timestamp;
   };
 
-  //this function is used in sendMessage function
-  deeplyCopyChatData = (newData, newMessageObj) => {
-    // function for deeply copying and immutably updating state data
-    // outer for loop loops through contacts (e.g. John, Kate etc)
-    for (let i = 0; i < this.state.data.length; i++) {
-      let deepCopy = [];
-      // key of this object is person name - e.g. John, Kate etc.
-      // value of this object is array of messages of chatting with that person
-      let updatedPerson = {};
-
-      // Inner for loop loops though all messages of a chat and copies them to deepCopy array.
-      // When it finds chat with currently selected contact (which is displayed in messaging section of Messenger component)
-      // (for example - messages of chatting with John)
-      // it copies messages of that chat to deepCopy array and updates with new message
-      for (let z = 0; z < Object.values(this.state.data[i])[0].length; z++) {
-        // copies all messages in chat
-        console.log("inner for");
-        deepCopy.push(Object.values(this.state.data[i])[0][z]);
-      }
-
-      // if finds currently selected chat - pushes new message
-      if (i == this.state.selectedChat) {
-        deepCopy.push(newMessageObj);
-      }
-
-      let person = Object.keys(this.state.data[i])[0];
-      updatedPerson = {
-        [person]: deepCopy,
-      };
-      newData.push(updatedPerson);
-    }
-
-    return newData;
-  };
-
   //checks if this.state.newMessage is not empty, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
@@ -221,40 +199,31 @@ export class Messenger extends Component {
         date: timestamp,
       };
 
-       let newData = JSON.parse(JSON.stringify(this.state.data));
-     //  let chatArray=[...Object.values(newData[this.state.selectedChat])[0]]
-     [...Object.values(newData[this.state.selectedChat])[0]].push(newMessageObj);
-     let contactName=Object.keys(this.state.data[this.state.selectedChat])
-      //  chatArray.push(newMessageObj);
-     console.log( newData[this.state.selectedChat][contactName])
-     newData[this.state.selectedChat][contactName].push(newMessageObj);
-     console.log( newData[this.state.selectedChat][contactName])
-//       console.log(newData);
+      let newData = JSON.parse(JSON.stringify(this.state.data));
+      let contactName = Object.keys(this.state.data[this.state.selectedChat]);
+      newData[this.state.selectedChat][contactName].push(newMessageObj);
 
-     // this.deeplyCopyChatData(newData, newMessageObj);
-
-
-      this.sendPutRequest(newData, "newMessage");
+      this.sendPutRequest(newData, "newMessage", "errorSendingMessage");
     }
   };
 
-    //checks if this.state.newContact is not empty, updates backend and UI
+  //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
-    if(this.state.newContact!==""){
+    if (this.state.newContact !== "") {
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
-      this.sendPutRequest(newData, "newContact");
+      this.sendPutRequest(newData, "newContact", "errorAddingContact");
     }
-    
   };
 
   scrollToBottom = () => {
     this.messagesEnd.scrollIntoView();
   };
 
-  resetError = () => {
-    this.setState({ errorSendingMessage: null });
+  resetError = (errorType) => {
+    console.log("resetError");
+    this.setState({ [errorType]: null });
   };
 
   showSidebarFunction = () => {
@@ -271,9 +240,11 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
+    console.log(this.state.errorSendingMessage);
+
     let messagingSection = [];
 
-    if (this.state.data.length > 0) {
+    if (this.state.data !== null) {
       let chat = [
         ...Object.values(this.state.data[this.state.selectedChat])[0],
       ];
@@ -304,7 +275,26 @@ export class Messenger extends Component {
     // messenger componnet displays chats.
     // <div ref={(el) => {this.messagesEnd = el; }}  ></div> - this is a dummy div which is used for scrolling down to the end of chat
 
-    if (this.state.data.length > 0) {
+    // checking if component is mounted prevents React state update on an unmounted component
+    let scrollToDiv = null;
+
+    if(this.state.data!=null){
+     scrollToDiv= <div  ref={this.lastMessageRef}  ></div>
+    }
+
+
+      // scrollToDiv = (
+      //   <div
+      //     ref={(el) => {
+      //       this.messagesEnd = el;
+      //     }}
+      //   ></div>
+      // );
+
+          
+    
+
+    if (this.state.data !== null) {
       chat = (
         <div>
           <div className={classes.chatComponent}>
@@ -317,7 +307,7 @@ export class Messenger extends Component {
             >
               <div className={classes.navbarOfSidbarForMobile}>
                 <Navbar
-                  navigateTo={"myProfile"}
+                  navigateTo={"/myProfile"}
                   chatWith={
                     Object.keys(this.state.data[this.state.selectedChat])[0]
                   }
@@ -332,6 +322,9 @@ export class Messenger extends Component {
                 inputChangedHandler={this.inputChangedHandler}
                 newContact={this.state.newContact}
                 addNewContact={this.addNewContact}
+                errorAddingContact={this.state.errorAddingContact}
+                resetError={this.resetError}
+                errorType={"errorAddingContact"}
               />
             </div>
 
@@ -343,21 +336,26 @@ export class Messenger extends Component {
               }
             >
               <Navbar
-                navigateTo={"myProfile"}
+                navigateTo={"/myProfile"}
                 chatWith={
                   Object.keys(this.state.data[this.state.selectedChat])[0]
                 }
                 showSidebarProperty={this.state.showSidebar}
                 showSidebarFunction={this.showSidebarFunction}
               />
-              <div className={`${classes.messagingSectionMessages} `}>
+          
+              <ScrollToBottom className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
-                <div
-                  ref={(el) => {
-                    this.messagesEnd = el;
-                  }}
-                ></div>
-              </div>
+                {/* <div  ref={this.lastMessageRef}  ></div> */}              
+
+                <ErrorMessage
+                  error={this.state.errorSendingMessage}
+                  resetError={this.resetError}
+                  errorType={"errorSendingMessage"}
+                />
+                 </ScrollToBottom>
+              
+              
               <InputField
                 inputChangedHandler={(event) =>
                   this.inputChangedHandler(event, "newMessage")
@@ -367,18 +365,13 @@ export class Messenger extends Component {
               />
             </div>
           </div>
-          <ErrorMessage
-            error={this.state.errorSendingMessage}
-            resetError={this.resetError}
-            errorType={"errorSendingMessage"}
-          />
         </div>
       );
     }
 
     // if chats data is not yet fetched from backend into state,
     // messenger componnet displays spinner
-    if (this.state.data.length == 0 && !this.state.errorLoadingChats) {
+    if (this.state.data == null && !this.state.errorLoadingChats) {
       chat = <Spinner />;
     }
 
@@ -387,10 +380,16 @@ export class Messenger extends Component {
     // messenger componnet displays Error message
     if (this.state.errorLoadingChats) {
       chat = (
-        <ErrorMessage
-          error={this.state.errorLoadingChats}
-          errorType={"errorLoadingChats"}
-        />
+        <div>
+          <Navbar navigateTo={"/myProfile"} showSidebarProperty={true} />
+          <div className={classes.loadingChatsError}>
+            {" "}
+            <ErrorMessage
+              error={this.state.errorLoadingChats}
+              errorType={"errorLoadingChats"}
+            />
+          </div>
+        </div>
       );
     }
 
