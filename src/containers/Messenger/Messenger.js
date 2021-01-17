@@ -19,13 +19,14 @@ export class Messenger extends Component {
   // errorSendingMessage - HTTP POST request error
 
   state = {
-    data: [],
+    data: null,
     selectedChat: 0,
     newMessage: "",
     newContact: "",
     errorLoadingChats: null,
     errorSendingMessage: null,
     showSidebar: true,
+    isMounted: false,
     isMounted: false
   };
 
@@ -47,7 +48,7 @@ export class Messenger extends Component {
     };
 
     req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
     req.send();
   };
 
@@ -73,7 +74,7 @@ export class Messenger extends Component {
     req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
     req.send(newDataJson);
   };
 
@@ -85,27 +86,32 @@ export class Messenger extends Component {
   // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
   // and chat UI if there are any new messages sent by other users. It is set to execute every 2s.
   // this.sendContinuousRequestsUpdateChats is eliminated, when Messenger component unmounts.
-  // currently this.sendContinuousRequestsUpdateChats  and componentWIllUnmount are commented
+  // currently this.sendContinuousRequestsUpdateChats  and componentWillUnmount are commented
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
+    this.setState({isMounted: true})
     this.chatsDataGetRequest();
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
     // }, 2000);
   }
 
-  // componentWillUnmount() {
-  //   clearInterval(this.sendContinuousRequestsUpdateChats);
-  // }
-
-  //scrolls to latest messages in chat
-  componentDidUpdate() {
-     this.scrollToBottom();
+  componentWillUnmount() {
+  //  clearInterval(this.sendContinuousRequestsUpdateChats);
+  this.setState({isMounted:false})
   }
+
+  // scrolls to latest messages in chat
+  // componentDidUpdate() {
+  //   if(this.state.errorLoadingChats==""){
+  //     this.scrollToBottom();
+  //   }
+
+  // }
 
   checkRequestStatusUpdateState = (req, newData, error, clearInput) => {
     // if request status !=200 , this.state.data does not update, this.state.error updates
-        // when fetching data from backend, emptying user's input fields in UI is undesirable
+    // when fetching data from backend, emptying user's input fields in UI is undesirable
     // when sending new text message, we want to set this.state.newMessage=""
     // after new contact is added, we want to set this.state.newContact=""
     if (req.status !== 200) {
@@ -201,6 +207,7 @@ export class Messenger extends Component {
   };
 
   resetError = () => {
+    console.log("resetError");
     this.setState({ errorSendingMessage: null });
   };
 
@@ -218,11 +225,11 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
-    console.log(this.state.errorSendingMessage)
+    console.log(this.state.errorSendingMessage);
 
     let messagingSection = [];
 
-    if (this.state.data.length > 0) {
+    if (this.state.data !== null) {
       let chat = [
         ...Object.values(this.state.data[this.state.selectedChat])[0],
       ];
@@ -253,7 +260,19 @@ export class Messenger extends Component {
     // messenger componnet displays chats.
     // <div ref={(el) => {this.messagesEnd = el; }}  ></div> - this is a dummy div which is used for scrolling down to the end of chat
 
-    if (this.state.data.length > 0) {
+    let scrollToDiv = null;
+
+    if (this.state.isMounted) {
+      scrollToDiv = (
+        <div
+          ref={(el) => {
+            this.messagesEnd = el;
+          }}
+        ></div>
+      );
+    }
+
+    if (this.state.data !== null) {
       chat = (
         <div>
           <div className={classes.chatComponent}>
@@ -301,11 +320,12 @@ export class Messenger extends Component {
               />
               <div className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
-                <div
-                  ref={(el) => {
-                    this.messagesEnd = el;
-                  }}
-                ></div>
+                {scrollToDiv}
+                <ErrorMessage
+                  error={this.state.errorSendingMessage}
+                  resetError={this.resetError}
+                  errorType={"errorSendingMessage"}
+                />
               </div>
               <InputField
                 inputChangedHandler={(event) =>
@@ -316,18 +336,13 @@ export class Messenger extends Component {
               />
             </div>
           </div>
-          <ErrorMessage
-            error={this.state.errorSendingMessage}
-            resetError={this.resetError}
-            errorType={"errorSendingMessage"}
-          />
         </div>
       );
     }
 
     // if chats data is not yet fetched from backend into state,
     // messenger componnet displays spinner
-    if (this.state.data.length == 0 && !this.state.errorLoadingChats) {
+    if (this.state.data == null && !this.state.errorLoadingChats) {
       chat = <Spinner />;
     }
 
@@ -336,10 +351,16 @@ export class Messenger extends Component {
     // messenger componnet displays Error message
     if (this.state.errorLoadingChats) {
       chat = (
-        <ErrorMessage
-          error={this.state.errorLoadingChats}
-          errorType={"errorLoadingChats"}
-        />
+        <div>
+          <Navbar navigateTo={"/myProfile"} showSidebarProperty={true} />
+          <div className={classes.loadingChatsError}>
+            {" "}
+            <ErrorMessage
+              error={this.state.errorLoadingChats}
+              errorType={"errorLoadingChats"}
+            />
+          </div>
+        </div>
       );
     }
 

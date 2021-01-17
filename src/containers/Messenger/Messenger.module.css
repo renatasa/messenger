@@ -30,6 +30,12 @@
   display: none;
 }
 
+.loadingChatsError{
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+}
+
 @media (max-width: 750px) {
   .sidebarPhoneNone {
     display: none;

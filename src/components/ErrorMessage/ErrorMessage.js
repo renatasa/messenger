@@ -27,7 +27,7 @@ export const errorMessage = (props) => {
       return (
         <div
           className={
-            props.error ? `${classes.alertItemLogin}` : `${classes.inactiveLogin}`
+            props.error ? `${classes.alertItemLogin} ${classes.alertItemLoginError}` : `${classes.inactiveLogin}`
           }
         >
           <div className={classes.data}>
@@ -35,13 +35,9 @@ export const errorMessage = (props) => {
               <span>Error</span>
             </p>
             <p className={classes.sub}>{error ? error : undefined}</p>
+            <p>Please contact our support team at www.chatapp.support.com</p>
           </div>
 
-          <FontAwesomeIcon
-            icon={faTimesCircle}
-            className={classes.close}
-            onClick={props.resetError}
-          />
         </div>
       );
 
