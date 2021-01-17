@@ -10,8 +10,8 @@ export const errorMessage = (props) => {
     error = props.error;
   }
 
-  if(props.error && (props.errorType=='errorSendingMessage' || props.errorType=='warning')){
-    setTimeout(() => props.resetError(), 2000);
+  if(props.error && (props.errorType=='errorSendingMessage' || props.errorType=='errorAddingContact' || props.errorType=='warning')){
+    setTimeout(() => props.resetError(props.errorType), 2000);
   }
 
   // if(props.error && props.errorType=='warning'){
@@ -35,7 +35,7 @@ export const errorMessage = (props) => {
               <span>Error</span>
             </p>
             <p className={classes.sub}>{error ? error : undefined}</p>
-            <p>Please contact our support team at www.chatapp.support.com</p>
+            <p>Please contact our support team </p>
           </div>
 
         </div>
@@ -43,12 +43,22 @@ export const errorMessage = (props) => {
 
       // shows error message in chat, when new message was not sent (HTTP PUT request status !==200)
       case "errorSendingMessage":
-        console.log();
+        console.log('errorsendingmsg');
       return (
         <div className={props.error ? classes.alertItemSendingMessage : classes.inactiveAlertItemSendingMessage}>
         Message not sent
       </div>
       );
+
+      // shows error message in chat, when new contact was not successfully added (HTTP PUT request status !==200)
+      case "errorAddingContact":
+        console.log('error adding contact');
+      return (
+        <div className={props.error ? classes.alertItemSendingMessage : classes.inactiveAlertItemSendingMessage}>
+        Contact not added
+      </div>
+      );
+
 
       // shows error message (warning) when user tries to login 
       // without providing email and password

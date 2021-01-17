@@ -18,6 +18,13 @@ export class Messenger extends Component {
   // errorLoadingChats - HTTP GET request error
   // errorSendingMessage - HTTP POST request error
 
+  // constructor(props) {
+  //   super(props);
+  //   this.exploreOurProductsRef = React.createRef();
+  //   this.todaySpecialRef = React.createRef();
+  //   this.lastMessageRef = React.createRef();
+  // }
+
   state = {
     data: null,
     selectedChat: 0,
@@ -25,10 +32,15 @@ export class Messenger extends Component {
     newContact: "",
     errorLoadingChats: null,
     errorSendingMessage: null,
+    errorAddingContact:null,
     showSidebar: true,
-    isMounted: false,
     isMounted: false
   };
+
+  // scrollToLastMessage = () => {
+  //  console.log('scrolling to last message');
+  //   window.scrollTo(0, this.lastMessageRef)
+  // } 
 
   chatsDataGetRequest = () => {
     let req = new XMLHttpRequest();
@@ -48,11 +60,11 @@ export class Messenger extends Component {
     };
 
     req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
     req.send();
   };
 
-  sendPutRequest = (newData, clearInput) => {
+  sendPutRequest = (newData, clearInput, updateError) => {
     let newDataObj = {
       data: newData,
     };
@@ -65,7 +77,7 @@ export class Messenger extends Component {
         this.checkRequestStatusUpdateState(
           req,
           newData,
-          "errorSendingMessage",
+          updateError,
           clearInput
         );
       }
@@ -74,7 +86,7 @@ export class Messenger extends Component {
     req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
+    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KE);
     req.send(newDataJson);
   };
 
@@ -89,7 +101,8 @@ export class Messenger extends Component {
   // currently this.sendContinuousRequestsUpdateChats  and componentWillUnmount are commented
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
-    this.setState({isMounted: true})
+    //this.scrollToBottom();
+    // if(this.state.data!=null){this.scrollToLastMessage()};
     this.chatsDataGetRequest();
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
@@ -98,7 +111,7 @@ export class Messenger extends Component {
 
   componentWillUnmount() {
   //  clearInterval(this.sendContinuousRequestsUpdateChats);
-  this.setState({isMounted:false})
+
   }
 
   // scrolls to latest messages in chat
@@ -136,6 +149,7 @@ export class Messenger extends Component {
   // updates and displays chat with selected user
   selectChat = (index) => {
     this.setState({ selectedChat: index });
+    // this.scrollToLastMessage();
 
     // when this.state.showSidebar is false,
     // Sidebar is assigned CSS class with display: none property
@@ -188,7 +202,7 @@ export class Messenger extends Component {
       let contactName = Object.keys(this.state.data[this.state.selectedChat]);
       newData[this.state.selectedChat][contactName].push(newMessageObj);
 
-      this.sendPutRequest(newData, "newMessage");
+      this.sendPutRequest(newData, "newMessage", "errorSendingMessage");
     }
   };
 
@@ -198,7 +212,7 @@ export class Messenger extends Component {
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
-      this.sendPutRequest(newData, "newContact");
+      this.sendPutRequest(newData, "newContact", "errorAddingContact");
     }
   };
 
@@ -206,9 +220,9 @@ export class Messenger extends Component {
     this.messagesEnd.scrollIntoView();
   };
 
-  resetError = () => {
+  resetError = (errorType) => {
     console.log("resetError");
-    this.setState({ errorSendingMessage: null });
+    this.setState({ [errorType]: null });
   };
 
   showSidebarFunction = () => {
@@ -260,17 +274,24 @@ export class Messenger extends Component {
     // messenger componnet displays chats.
     // <div ref={(el) => {this.messagesEnd = el; }}  ></div> - this is a dummy div which is used for scrolling down to the end of chat
 
+    // checking if component is mounted prevents React state update on an unmounted component
     let scrollToDiv = null;
 
-    if (this.state.isMounted) {
-      scrollToDiv = (
-        <div
-          ref={(el) => {
-            this.messagesEnd = el;
-          }}
-        ></div>
-      );
+    if(this.state.data!=null){
+     scrollToDiv= <div  ref={this.lastMessageRef}  ></div>
     }
+
+
+      // scrollToDiv = (
+      //   <div
+      //     ref={(el) => {
+      //       this.messagesEnd = el;
+      //     }}
+      //   ></div>
+      // );
+
+          
+    
 
     if (this.state.data !== null) {
       chat = (
@@ -300,6 +321,9 @@ export class Messenger extends Component {
                 inputChangedHandler={this.inputChangedHandler}
                 newContact={this.state.newContact}
                 addNewContact={this.addNewContact}
+                errorAddingContact={this.state.errorAddingContact}
+                resetError={this.resetError}
+                errorType={"errorAddingContact"}
               />
             </div>
 
@@ -319,8 +343,11 @@ export class Messenger extends Component {
                 showSidebarFunction={this.showSidebarFunction}
               />
               <div className={`${classes.messagingSectionMessages} `}>
+
                 {messagingSection}
-                {scrollToDiv}
+                {/* <div  ref={this.lastMessageRef}  ></div> */}
+                <div  >test</div>
+
                 <ErrorMessage
                   error={this.state.errorSendingMessage}
                   resetError={this.resetError}

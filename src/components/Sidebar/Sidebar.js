@@ -1,6 +1,7 @@
 import React from "react";
 import SidebarItem from "../UI/SidebarItem/SidebarItem";
 import SidebarInputField from "../UI/SidebarInputField/SidebarInputField";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 export const sidebar = (props) => {
   // sidebar stateless component gets chatting data (as a prop)
@@ -30,6 +31,11 @@ export const sidebar = (props) => {
 
   return (
     <div>
+      <ErrorMessage
+        error={props.errorAddingContact}
+        resetError={props.resetError}
+        errorType={"errorAddingContact"}
+      />
       <SidebarInputField
         inputChangedHandler={props.inputChangedHandler}
         newContact={props.newContact}
