@@ -8,6 +8,7 @@ import Navbar from "../../components/Navbar/Navbar";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -342,18 +343,19 @@ export class Messenger extends Component {
                 showSidebarProperty={this.state.showSidebar}
                 showSidebarFunction={this.showSidebarFunction}
               />
-              <div className={`${classes.messagingSectionMessages} `}>
-
+          
+              <ScrollToBottom className={`${classes.messagingSectionMessages} `}>
                 {messagingSection}
-                {/* <div  ref={this.lastMessageRef}  ></div> */}
-                <div  >test</div>
+                {/* <div  ref={this.lastMessageRef}  ></div> */}              
 
                 <ErrorMessage
                   error={this.state.errorSendingMessage}
                   resetError={this.resetError}
                   errorType={"errorSendingMessage"}
                 />
-              </div>
+                 </ScrollToBottom>
+              
+              
               <InputField
                 inputChangedHandler={(event) =>
                   this.inputChangedHandler(event, "newMessage")

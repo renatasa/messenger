@@ -23,7 +23,7 @@
 .messagingSectionMessages{
       border: 1px solid red;
       height: 78%;
-      overflow-y: scroll;
+      overflow-y: hidden;
 }
 
 .navbarOfSidbarForMobile{
