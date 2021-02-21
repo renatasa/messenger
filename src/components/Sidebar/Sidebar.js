@@ -13,7 +13,7 @@ export const sidebar = (props) => {
   let thisIsSelectedChat = false;
   if (props.data.length > 0) {
     for (let i = 0; i < props.data.length; i++) {
-      if (props.selectedChat == i) {
+      if (props.selectedChat === i) {
         thisIsSelectedChat = true;
       }
       chats.push(

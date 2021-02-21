@@ -88,7 +88,7 @@ export class Messenger extends Component {
           clearInput
         );
       })
-      
+
       .catch((error) => {
         console.log(error);
         this.checkRequestStatusUpdateState(
@@ -136,7 +136,7 @@ export class Messenger extends Component {
     if (req.status !== 200) {
       this.setState({ [error]: req["data"]["message"] });
       // this.setState({ [error]: JSON.parse(req.response).message });
-    } else if (clearInput == "do not clear input") {
+    } else if (clearInput === "do not clear input") {
       this.setState({
         data: newData,
         [error]: null,
@@ -353,7 +353,7 @@ export class Messenger extends Component {
 
     // if chats data is not yet fetched from backend into state,
     // messenger componnet displays spinner
-    if (this.state.data == null && !this.state.errorLoadingChats) {
+    if (this.state.data === null && !this.state.errorLoadingChats) {
       chat = <Spinner />;
     }
 

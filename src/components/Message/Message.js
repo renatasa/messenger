@@ -8,7 +8,7 @@ export const message = (props) => {
 
   let me;
 
-  props.author == "me" ? (me = true) : (me = false);
+  props.author === "me" ? (me = true) : (me = false);
 
   return (
     <div
