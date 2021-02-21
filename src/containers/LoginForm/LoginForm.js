@@ -53,7 +53,6 @@ export class LoginForm extends Component {
   };
 
   render() {
-    console.log(this.state);
     // inputs of Login form
     let inputs = (
       <div>

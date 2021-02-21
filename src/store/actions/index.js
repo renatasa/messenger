@@ -1,6 +1,1 @@
-
-
-    export {
-        setEmailPassword, 
-        logout
-    } from './actions';
+export { setEmailPassword, logout } from "./actions";
