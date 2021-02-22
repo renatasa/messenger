@@ -21,7 +21,7 @@ export const navbar = (props) => {
   let chatWith = null;
   let chooseIcon = null;
 
-  if (props.navigateTo == "/myProfile") {
+  if (props.navigateTo === "/myProfile") {
     chooseIcon = faUser;
     if (!props.showSidebarProperty) {
       navButtonForMobileDevice = (
@@ -33,14 +33,14 @@ export const navbar = (props) => {
     chatWith = <div className={classes.chatWith}>{props.chatWith}</div>;
   }
 
-  if (props.navigateTo == "/messenger") {
+  if (props.navigateTo === "/messenger") {
     chooseIcon = faComments;
   }
 
   return (
     <div
       className={
-        props.navigateTo == "/messenger"
+        props.navigateTo === "/messenger"
           ? `${classes.navbar} ${classes.navbarMyProfile}`
           : classes.navbar
       }

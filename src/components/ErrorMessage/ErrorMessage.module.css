@@ -100,6 +100,37 @@
   color: #ce837d;
 }
 
+.showTooManyCharsError {
+  width: 9rem;
+  padding-top: 0.4rem;
+  text-align: center;
+  height: 2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background-color: #b32f2d;
+  color: #ffffff;
+  transform: translate(170%, -120%);
+  border-radius: 0.8rem;
+  opacity: 1;
+  transition: all 0.2s ease;
+}
+
+.hideTooManyCharsError {
+  width: 9rem;
+  padding-top: 0.4rem;
+  text-align: center;
+  height: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #b32f2d;
+  color: #ffffff;
+  opacity: 0;
+  transform: translate(100%, -120%);
+  border-radius: 0.8rem;
+  transition: all 0.2s ease;
+  visibility: hidden;
+}
+
 @media (max-width: 800px) {
   .alertItemLoginError {
     width: 80%;
@@ -115,5 +146,21 @@
     top: 60%;
     width: 60%;
     left: 20%;
+  }
+}
+
+@media (max-width: 440px) {
+  .showTooManyCharsError {
+    transform: translate(130%, -120%);
+  }
+}
+
+@media (max-width: 370px) {
+  .showTooManyCharsError {
+    font-size: 0.6rem;
+    transform: translate(150%, -120%);
+    padding: 0.2rem;
+    height: 1.5rem;
+    width: 7rem;
   }
 }

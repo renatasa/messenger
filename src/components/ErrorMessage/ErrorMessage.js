@@ -11,9 +11,9 @@ export const errorMessage = (props) => {
 
   if (
     props.error &&
-    (props.errorType == "errorSendingMessage" ||
-      props.errorType == "errorAddingContact" ||
-      props.errorType == "warning")
+    (props.errorType === "errorSendingMessage" ||
+      props.errorType === "errorAddingContact" ||
+      props.errorType === "warning")
   ) {
     setTimeout(() => props.resetError(props.errorType), 2000);
   }
@@ -91,6 +91,19 @@ export const errorMessage = (props) => {
             className={classes.close}
             onClick={props.resetError}
           />
+        </div>
+      );
+
+    case "tooManyChars":
+      return (
+        <div
+          className={
+            props.error
+              ? classes.showTooManyCharsError
+              : classes.hideTooManyCharsError
+          }
+        >
+          Too many characters!
         </div>
       );
 

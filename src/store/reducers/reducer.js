@@ -18,7 +18,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SET_EMAIL_PASSWORD:
       return setEmailPassword(state, action);
     case actionTypes.LOGOUT:
-        return logout(state, action);
+      return logout(state, action);
     default:
       return state;
   }

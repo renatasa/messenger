@@ -1,5 +1,6 @@
 import React from "react";
 import classes from "./ProfileDetails.module.css";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 
 export const profileDetails = (props) => {
   return (
@@ -12,9 +13,10 @@ export const profileDetails = (props) => {
           onChange={(event) => props.inputChangedHandler(event, props.index)}
         ></input>
       </div>
-      <div className={props.error ? classes.show : classes.hide}>
-        Too many characters!
-      </div>
+      <ErrorMessage
+        error={props.error ? "tooManyChars" : undefined}
+        errorType="tooManyChars"
+      />
     </div>
   );
 };

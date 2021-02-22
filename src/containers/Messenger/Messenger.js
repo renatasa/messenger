@@ -5,6 +5,7 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
@@ -34,25 +35,32 @@ export class Messenger extends Component {
   };
 
   chatsDataGetRequest = () => {
-    let req = new XMLHttpRequest();
-    req.onreadystatechange = () => {
-      if (req.readyState == XMLHttpRequest.DONE) {
+    let useHeaders = {
+      headers: {
+        "secret-key": process.env.REACT_APP_API_KEY,
+      },
+    };
+    axios
+      .get(process.env.REACT_APP_GET_CHATS, useHeaders)
+      .then((response) => {
         let dataUpdated = [];
-        if (req.status == 200) {
-          dataUpdated = [...JSON.parse(req.responseText)["data"]];
-        }
+        dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
+
         this.checkRequestStatusUpdateState(
-          req,
+          response,
           dataUpdated,
           "errorLoadingChats",
           "do not clear input"
         );
-      }
-    };
-
-    req.open("GET", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
-    req.send();
+      })
+      .catch((error) => {
+        this.checkRequestStatusUpdateState(
+          error.response,
+          null,
+          "errorLoadingChats",
+          "do not clear input"
+        );
+      });
   };
 
   sendPutRequest = (newData, clearInput, updateError) => {
@@ -61,24 +69,35 @@ export class Messenger extends Component {
     };
 
     let newDataJson = JSON.stringify(newDataObj);
-    let req = new XMLHttpRequest();
 
-    req.onreadystatechange = () => {
-      if (req.readyState == XMLHttpRequest.DONE) {
+    let useHeaders = {
+      headers: {
+        "secret-key": process.env.REACT_APP_API_KEY,
+        "Content-Type": "application/json",
+        versioning: "false",
+      },
+    };
+
+    axios
+      .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
+      .then((response) => {
         this.checkRequestStatusUpdateState(
-          req,
+          response,
           newData,
           updateError,
           clearInput
         );
-      }
-    };
+      })
 
-    req.open("PUT", process.env.REACT_APP_GET_SIDEBAR_CHATS, true);
-    req.setRequestHeader("Content-Type", "application/json");
-    req.setRequestHeader("versioning", "false");
-    req.setRequestHeader("secret-key", process.env.REACT_APP_API_KEY);
-    req.send(newDataJson);
+      .catch((error) => {
+        console.log(error);
+        this.checkRequestStatusUpdateState(
+          error.response,
+          null,
+          updateError,
+          clearInput
+        );
+      });
   };
 
   // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
@@ -87,10 +106,22 @@ export class Messenger extends Component {
   // currently this.sendContinuousRequestsUpdateChats  and componentWillUnmount are commented
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
-    this.chatsDataGetRequest();
+    if (this.props.email !== null && this.props.password !== null) {
+      this.chatsDataGetRequest();
+    }
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
     // }, 2000);
+  }
+
+  componentDidUpdate() {
+    if (
+      this.props.email !== null &&
+      this.props.password !== null &&
+      this.state.data
+    ) {
+      this.scrollToBottom();
+    }
   }
 
   componentWillUnmount() {
@@ -103,8 +134,9 @@ export class Messenger extends Component {
     // when sending new text message, we want to clear input field after successful request (set this.state.newMessage="")
     // after new contact is added, we want to  clear input field after successful request (set this.state.newContact="")
     if (req.status !== 200) {
-      this.setState({ [error]: JSON.parse(req.response).message });
-    } else if (clearInput == "do not clear input") {
+      this.setState({ [error]: req["data"]["message"] });
+      // this.setState({ [error]: JSON.parse(req.response).message });
+    } else if (clearInput === "do not clear input") {
       this.setState({
         data: newData,
         [error]: null,
@@ -204,6 +236,10 @@ export class Messenger extends Component {
     this.setState({ showSidebar: false });
   };
 
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  };
+
   render() {
     // in the Sidebar, messenger contacts are being displayed
     // Sidebar is on the left of the page.
@@ -287,8 +323,15 @@ export class Messenger extends Component {
                 showSidebarProperty={this.state.showSidebar}
                 showSidebarFunction={this.showSidebarFunction}
               />
-              <div className={`${classes.messagingSectionMessages} `}>
+              <div className={classes.messagingSectionMessages}>
                 {messagingSection}
+                <div
+                  ref={(el) => {
+                    this.messagesEnd = el;
+                  }}
+                >
+                  {" "}
+                </div>
               </div>
               <ErrorMessage
                 error={this.state.errorSendingMessage}
@@ -310,7 +353,7 @@ export class Messenger extends Component {
 
     // if chats data is not yet fetched from backend into state,
     // messenger componnet displays spinner
-    if (this.state.data == null && !this.state.errorLoadingChats) {
+    if (this.state.data === null && !this.state.errorLoadingChats) {
       chat = <Spinner />;
     }
 
