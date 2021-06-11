@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import Message from "../../components/Message/Message";
 import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
@@ -9,7 +8,7 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
-import {createMessagingSection} from "./service";
+import { createMessagingSection, createErrorMessage } from "./service";
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -171,7 +170,6 @@ export class Messenger extends Component {
     this.setState({ [inputName]: event.target.value });
   };
 
-
   //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
@@ -224,7 +222,10 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
-    const messagingSection = createMessagingSection(this.state.data, this.state.selectedChat);
+    const messagingSection = createMessagingSection(
+      this.state.data,
+      this.state.selectedChat
+    );
 
     let chat = null;
     // user logs in by providing email and password
@@ -320,28 +321,11 @@ export class Messenger extends Component {
       chat = <Spinner />;
     }
 
-    // if chats data was not fetched from backend into state
-    // (server responded with status code which is not 200)
-    // messenger componnet displays Error message
-    if (this.state.errorLoadingChats) {
-      chat = (
-        <div>
-          <Navbar navigateTo={"/myProfile"} showSidebarProperty={true} />
-          <div className={classes.loadingChatsError}>
-            {" "}
-            <ErrorMessage
-              error={this.state.errorLoadingChats}
-              errorType={"errorLoadingChats"}
-            />
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div>
         {redirectToLogin}
         {chat}
+        {createErrorMessage(this.state.errorLoadingChats)}
       </div>
     );
   }
