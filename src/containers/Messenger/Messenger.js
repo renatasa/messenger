@@ -9,6 +9,7 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
+import {createMessagingSection} from "./service";
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -223,22 +224,7 @@ export class Messenger extends Component {
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
 
-    let messagingSection = [];
-
-    if (this.state.data !== null) {
-      let chat = [
-        ...Object.values(this.state.data[this.state.selectedChat])[0],
-      ];
-      chat.map((chatItem, index) =>
-        messagingSection.push(
-          <Message
-            author={chatItem.author}
-            messageText={chatItem.messageText}
-            key={index}
-          />
-        )
-      );
-    }
+    const messagingSection = createMessagingSection(this.state.data, this.state.selectedChat);
 
     let chat = null;
     // user logs in by providing email and password
