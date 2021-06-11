@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -220,16 +219,84 @@ export class Messenger extends Component {
     this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   };
 
+  chatAppDesctop = () => {
+    return (
+      <div
+        className={
+          this.state.showSidebar
+            ? `${classes.messagingSection} ${classes.messagingSectionPhoneNone}`
+            : `${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`
+        }
+      >
+        <Navbar
+          navigateTo={"/myProfile"}
+          chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
+          showSidebarProperty={this.state.showSidebar}
+          showSidebarFunction={this.showSidebarFunction}
+        />
+        <div className={classes.messagingSectionMessages}>
+          {createMessagingSection(this.state.data, this.state.selectedChat)}
+          <div
+            ref={(el) => {
+              this.messagesEnd = el;
+            }}
+          >
+            {" "}
+          </div>
+        </div>
+        <ErrorMessage
+          error={this.state.errorSendingMessage}
+          resetError={this.resetError}
+          errorType={"errorSendingMessage"}
+        />
+        <InputField
+          inputChangedHandler={(event) =>
+            this.inputChangedHandler(event, "newMessage")
+          }
+          sendMessage={this.sendMessage}
+          newMessage={this.state.newMessage}
+        />
+      </div>
+    );
+  };
+
+  chatAppMobile = () => {
+    return (
+      <div
+        className={
+          this.state.showSidebar
+            ? `${classes.sidebar} ${classes.sidebarPhoneDisplay}`
+            : `${classes.sidebar} ${classes.sidebarPhoneNone}`
+        }
+      >
+        <div className={classes.navbarOfSidbarForMobile}>
+          <Navbar
+            navigateTo={"/myProfile"}
+            chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
+            showSidebarProperty={this.state.showSidebar}
+            showSidebarFunction={this.showSidebarFunction}
+          />
+        </div>
+        <Sidebar
+          data={this.state.data}
+          selectChat={this.selectChat}
+          selectedChat={this.state.selectedChat}
+          inputChangedHandler={this.inputChangedHandler}
+          newContact={this.state.newContact}
+          addNewContact={this.addNewContact}
+          errorAddingContact={this.state.errorAddingContact}
+          resetError={this.resetError}
+          errorType={"errorAddingContact"}
+        />
+      </div>
+    );
+  };
+
   render() {
     // in the Sidebar, messenger contacts are being displayed
     // Sidebar is on the left of the page.
     // Messaging section (that contains chat with selected contact)
     // is being displayed on the right side of the page
-
-    const messagingSection = createMessagingSection(
-      this.state.data,
-      this.state.selectedChat
-    );
 
     let chat = null;
     // user logs in by providing email and password
@@ -246,77 +313,8 @@ export class Messenger extends Component {
       chat = (
         <div>
           <div className={classes.chatComponent}>
-            <div
-              className={
-                this.state.showSidebar
-                  ? `${classes.sidebar} ${classes.sidebarPhoneDisplay}`
-                  : `${classes.sidebar} ${classes.sidebarPhoneNone}`
-              }
-            >
-              <div className={classes.navbarOfSidbarForMobile}>
-                <Navbar
-                  navigateTo={"/myProfile"}
-                  chatWith={
-                    Object.keys(this.state.data[this.state.selectedChat])[0]
-                  }
-                  showSidebarProperty={this.state.showSidebar}
-                  showSidebarFunction={this.showSidebarFunction}
-                />
-              </div>
-              <Sidebar
-                data={this.state.data}
-                selectChat={this.selectChat}
-                selectedChat={this.state.selectedChat}
-                inputChangedHandler={this.inputChangedHandler}
-                newContact={this.state.newContact}
-                addNewContact={this.addNewContact}
-                errorAddingContact={this.state.errorAddingContact}
-                resetError={this.resetError}
-                errorType={"errorAddingContact"}
-              />
-            </div>
-
-            <div
-              className={
-                this.state.showSidebar
-                  ? `${classes.messagingSection} ${classes.messagingSectionPhoneNone}`
-                  : `${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`
-              }
-            >
-              <Navbar
-                navigateTo={"/myProfile"}
-                chatWith={
-                  Object.keys(this.state.data[this.state.selectedChat])[0]
-                }
-                showSidebarProperty={this.state.showSidebar}
-                showSidebarFunction={this.showSidebarFunction}
-              />
-              <div className={classes.messagingSectionMessages}>
-                {createMessagingSection(
-                  this.state.data,
-                  this.state.selectedChat
-                )}
-                <div
-                  ref={(el) => {
-                    this.messagesEnd = el;
-                  }}
-                >
-                  {" "}
-                </div>
-              </div>
-              <ErrorMessage
-                error={this.state.errorSendingMessage}
-                resetError={this.resetError}
-                errorType={"errorSendingMessage"}
-              />
-              <InputField
-                inputChangedHandler={(event) =>
-                  this.inputChangedHandler(event, "newMessage")
-                }
-                sendMessage={this.sendMessage}
-                newMessage={this.state.newMessage}
-              />
-            </div>
+            {this.chatAppMobile()}
+            {this.chatAppDesctop()}
           </div>
         </div>
       );

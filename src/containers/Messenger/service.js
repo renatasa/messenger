@@ -35,11 +35,11 @@ export const createErrorMessage = (errorLoadingChats) => {
         </div>
       </div>
     );
-  } 
+  }
 };
 
-export const createSpinner=(data, errorLoadingChats)=>{
-    if (data === null && !errorLoadingChats) {
-        return <Spinner />;
-      }
-}
+export const createSpinner = (data, errorLoadingChats) => {
+  if (data === null && !errorLoadingChats) {
+    return <Spinner />;
+  }
+};
