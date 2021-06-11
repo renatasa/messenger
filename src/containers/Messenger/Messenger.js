@@ -170,29 +170,6 @@ export class Messenger extends Component {
     this.setState({ [inputName]: event.target.value });
   };
 
-  // function for creating timestamps that are used as
-  // IDs for new nessages
-  createTimeStamp = () => {
-    let now = new Date();
-    let timestamp = now.getFullYear().toString();
-    timestamp += (now.getMonth < 9 ? "0" : "") + now.getMonth().toString() + 1; // JS months are 0-based
-    timestamp += (now.getDate() < 10 ? "0" : "") + now.getDate().toString();
-    timestamp += (now.getHours < 10 ? "0" : "") + now.getHours().toString();
-    timestamp +=
-      (now.getMinutes() < 10 ? "0" : "") + now.getMinutes().toString();
-    timestamp +=
-      (now.getSeconds() < 10 ? "0" : "") + now.getSeconds().toString();
-
-    if (now.getMilliseconds() < 10) {
-      timestamp += "00" + now.getMilliseconds().toString();
-    } else if (now.getMilliseconds() < 100) {
-      timestamp += "0" + now.getMilliseconds().toString();
-    } else {
-      timestamp += now.getMilliseconds().toString();
-    }
-
-    return timestamp;
-  };
 
   //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
