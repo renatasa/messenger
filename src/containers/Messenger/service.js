@@ -22,8 +22,6 @@ export const createMessagingSection = (data, selectedChat) => {
 };
 
 export const createErrorMessage = (errorLoadingChats) => {
-    let error=null
-    console.log("service")
   if (errorLoadingChats) {
     return (
       <div>
@@ -37,5 +35,11 @@ export const createErrorMessage = (errorLoadingChats) => {
         </div>
       </div>
     );
-  } else return null;
+  } 
 };
+
+export const createSpinner=(data, errorLoadingChats)=>{
+    if (data === null && !errorLoadingChats) {
+        return <Spinner />;
+      }
+}

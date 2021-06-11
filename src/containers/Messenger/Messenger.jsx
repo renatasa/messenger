@@ -8,7 +8,11 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
-import { createMessagingSection, createErrorMessage } from "./service";
+import {
+  createMessagingSection,
+  createErrorMessage,
+  createSpinner,
+} from "./service";
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -288,7 +292,10 @@ export class Messenger extends Component {
                 showSidebarFunction={this.showSidebarFunction}
               />
               <div className={classes.messagingSectionMessages}>
-                {messagingSection}
+                {createMessagingSection(
+                  this.state.data,
+                  this.state.selectedChat
+                )}
                 <div
                   ref={(el) => {
                     this.messagesEnd = el;
@@ -315,17 +322,12 @@ export class Messenger extends Component {
       );
     }
 
-    // if chats data is not yet fetched from backend into state,
-    // messenger componnet displays spinner
-    if (this.state.data === null && !this.state.errorLoadingChats) {
-      chat = <Spinner />;
-    }
-
     return (
       <div>
         {redirectToLogin}
         {chat}
         {createErrorMessage(this.state.errorLoadingChats)}
+        {createSpinner(this.state.data, this.state.errorLoadingChats)}
       </div>
     );
   }
