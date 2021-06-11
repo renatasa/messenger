@@ -219,7 +219,7 @@ export class Messenger extends Component {
     this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   };
 
-  chatAppDesctop = () => {
+  chatAppDesktop = () => {
     return (
       <div
         className={
@@ -314,7 +314,7 @@ export class Messenger extends Component {
         <div>
           <div className={classes.chatComponent}>
             {this.chatAppMobile()}
-            {this.chatAppDesctop()}
+            {this.chatAppDesktop()}
           </div>
         </div>
       );
