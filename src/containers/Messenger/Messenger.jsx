@@ -21,6 +21,8 @@ const constants={
   newMessage: "newMessage", 
   newContact:"newContact",
   mesAsAuthorOfMessage: "me",
+  navigateToMyProfile: "/myProfile",
+  navigateToHome: "/",
   emptyString: "", 
   emptyArray: []
 }
@@ -94,7 +96,7 @@ export class Messenger extends Component {
     };
 
     axios
-      .put(process.env.REACT_APP_GET_CHAT, newDataJson, useHeaders)
+      .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
       .then((response) => {
         this.checkRequestStatusUpdateState(
           response,
@@ -203,7 +205,7 @@ export class Messenger extends Component {
 
   //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
-    if (this.state.newContact !== "") {
+    if (this.state.newContact !== constants.emptyString) {
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
@@ -263,7 +265,7 @@ export class Messenger extends Component {
           }
         >
           <Navbar
-            navigateTo={"/myProfile"}
+            navigateTo={constants.navigateToMyProfile}
             chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
             showSidebarProperty={this.state.showSidebar}
             showSidebarFunction={this.showSidebarFunction}
@@ -300,7 +302,7 @@ export class Messenger extends Component {
     return (
       <div className={classes.navbarOfSidbarForMobile}>
         <Navbar
-          navigateTo={"/myProfile"}
+          navigateTo={constants.navigateToMyProfile}
           chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
           showSidebarProperty={this.state.showSidebar}
           showSidebarFunction={this.showSidebarFunction}
@@ -311,7 +313,7 @@ export class Messenger extends Component {
 
   redirectToLogin=()=>{
     if (!this.props.email || !this.props.password) {
-     return <Redirect to="/" />;
+     return <Redirect to={constants.navigateToHome} />;
     }
   }
   render() {
