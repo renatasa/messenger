@@ -13,6 +13,18 @@ import {
   createSpinner,
 } from "./service";
 
+const constants={
+  errorSendingMessage: "errorSendingMessage",
+  errorLoadingChats: "errorLoadingChats",
+  doNotClearInput:"do not clear input", 
+  errorAddingContact :"errorAddingContact", 
+  newMessage: "newMessage", 
+  newContact:"newContact",
+  mesAsAuthorOfMessage: "me",
+  emptyString: "", 
+  emptyArray: []
+}
+
 export class Messenger extends Component {
   // data - chatting data that is received from backend
   // by default, when first loads,
@@ -52,16 +64,16 @@ export class Messenger extends Component {
         this.checkRequestStatusUpdateState(
           response,
           dataUpdated,
-          "errorLoadingChats",
-          "do not clear input"
+          constants.errorLoadingChats,
+          constants.doNotClearInput
         );
       })
       .catch((error) => {
         this.checkRequestStatusUpdateState(
           error.response,
           null,
-          "errorLoadingChats",
-          "do not clear input"
+          constants.errorLoadingChats,
+          constants.doNotClearInput
         );
       });
   };
@@ -82,7 +94,7 @@ export class Messenger extends Component {
     };
 
     axios
-      .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
+      .put(process.env.REACT_APP_GET_CHAT, newDataJson, useHeaders)
       .then((response) => {
         this.checkRequestStatusUpdateState(
           response,
@@ -139,7 +151,7 @@ export class Messenger extends Component {
     if (req.status !== 200) {
       this.setState({ [error]: req["data"]["message"] });
       // this.setState({ [error]: JSON.parse(req.response).message });
-    } else if (clearInput === "do not clear input") {
+    } else if (clearInput === constants.doNotClearInput) {
       this.setState({
         data: newData,
         [error]: null,
@@ -147,7 +159,7 @@ export class Messenger extends Component {
     } else {
       this.setState({
         data: newData,
-        [clearInput]: "",
+        [clearInput]: constants.emptyString,
         [error]: null,
       });
     }
@@ -176,18 +188,16 @@ export class Messenger extends Component {
   //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
-      let timestamp = this.createTimeStamp();
       let newMessageObj = {
         messageText: this.state.newMessage,
-        author: "me",
-        date: timestamp,
+        author: constants.mesAsAuthorOfMessage,
       };
 
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let contactName = Object.keys(this.state.data[this.state.selectedChat]);
       newData[this.state.selectedChat][contactName].push(newMessageObj);
 
-      this.sendPutRequest(newData, "newMessage", "errorSendingMessage");
+      this.sendPutRequest(newData, constants.newMessage, constants.errorSendingMessage);
     }
   };
 
@@ -197,7 +207,7 @@ export class Messenger extends Component {
       let newData = JSON.parse(JSON.stringify(this.state.data));
       let newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
-      this.sendPutRequest(newData, "newContact", "errorAddingContact");
+      this.sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
     }
   };
 
@@ -219,7 +229,9 @@ export class Messenger extends Component {
     this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   };
 
-  chatAppDesktop = () => {
+  // on mobile devices only mobile responsive navbar is shown (using css property display : none)
+  chatApp = () => {
+    if (this.state.data !== null){
     return (
       <div className={classes.chatComponent}>
         <div
@@ -229,7 +241,7 @@ export class Messenger extends Component {
               : `${classes.sidebar} ${classes.sidebarPhoneNone}`
           }
         >
-          {this.navbarForMobile()}
+          {this.mobileResponsiveNavbar()}
 
           <Sidebar
             data={this.state.data}
@@ -240,7 +252,7 @@ export class Messenger extends Component {
             addNewContact={this.addNewContact}
             errorAddingContact={this.state.errorAddingContact}
             resetError={this.resetError}
-            errorType={"errorAddingContact"}
+            errorType={constants.errorAddingContact}
           />
         </div>
         <div
@@ -269,11 +281,11 @@ export class Messenger extends Component {
           <ErrorMessage
             error={this.state.errorSendingMessage}
             resetError={this.resetError}
-            errorType={"errorSendingMessage"}
+            errorType={constants.errorSendingMessage}
           />
           <InputField
             inputChangedHandler={(event) =>
-              this.inputChangedHandler(event, "newMessage")
+              this.inputChangedHandler(event, constants.newMessage)
             }
             sendMessage={this.sendMessage}
             newMessage={this.state.newMessage}
@@ -281,14 +293,15 @@ export class Messenger extends Component {
         </div>
       </div>
     );
+          }
   };
 
-  navbarForMobile = () => {
+  mobileResponsiveNavbar = () => {
     return (
       <div className={classes.navbarOfSidbarForMobile}>
         <Navbar
           navigateTo={"/myProfile"}
-  
+          chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
           showSidebarProperty={this.state.showSidebar}
           showSidebarFunction={this.showSidebarFunction}
         />
@@ -296,31 +309,16 @@ export class Messenger extends Component {
     );
   };
 
-  render() {
-    // in the Sidebar, messenger contacts are being displayed
-    // Sidebar is on the left of the page.
-    // Messaging section (that contains chat with selected contact)
-    // is being displayed on the right side of the page
-
-    let chat = null;
-    // user logs in by providing email and password
-    // if user tries to access Messenger component
-    // without logging in first,
-    // user is being redirected to LoginForm component
-
-    let redirectToLogin = null;
+  redirectToLogin=()=>{
     if (!this.props.email || !this.props.password) {
-      redirectToLogin = <Redirect to="/" />;
+     return <Redirect to="/" />;
     }
-
-    if (this.state.data !== null) {
-      chat = <div>{this.chatAppDesktop()}</div>;
-    }
-
+  }
+  render() {
     return (
       <div>
-        {redirectToLogin}
-        {chat}
+        {this.redirectToLogin()}
+        {this.chatApp()}
         {createErrorMessage(this.state.errorLoadingChats)}
         {createSpinner(this.state.data, this.state.errorLoadingChats)}
       </div>
