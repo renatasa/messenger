@@ -52,7 +52,7 @@ export class Messenger extends Component {
   };
 
   chatsDataGetRequest = () => {
-    let useHeaders = {
+    const useHeaders = {
       headers: {
         "secret-key": process.env.REACT_APP_API_KEY,
       },
@@ -60,8 +60,8 @@ export class Messenger extends Component {
     axios
       .get(process.env.REACT_APP_GET_CHATS, useHeaders)
       .then((response) => {
-        let dataUpdated = [];
-        dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
+        
+        const dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
 
         this.checkRequestStatusUpdateState(
           response,
@@ -81,13 +81,13 @@ export class Messenger extends Component {
   };
 
   sendPutRequest = (newData, clearInput, updateError) => {
-    let newDataObj = {
+    const newDataObj = {
       data: newData,
     };
 
-    let newDataJson = JSON.stringify(newDataObj);
+    const newDataJson = JSON.stringify(newDataObj);
 
-    let useHeaders = {
+    const useHeaders = {
       headers: {
         "secret-key": process.env.REACT_APP_API_KEY,
         "Content-Type": "application/json",
@@ -190,13 +190,13 @@ export class Messenger extends Component {
   //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
-      let newMessageObj = {
+      const newMessageObj = {
         messageText: this.state.newMessage,
         author: constants.mesAsAuthorOfMessage,
       };
 
-      let newData = JSON.parse(JSON.stringify(this.state.data));
-      let contactName = Object.keys(this.state.data[this.state.selectedChat]);
+      const newData = JSON.parse(JSON.stringify(this.state.data));
+      const contactName = Object.keys(this.state.data[this.state.selectedChat]);
       newData[this.state.selectedChat][contactName].push(newMessageObj);
 
       this.sendPutRequest(newData, constants.newMessage, constants.errorSendingMessage);
@@ -206,8 +206,8 @@ export class Messenger extends Component {
   //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
     if (this.state.newContact !== constants.emptyString) {
-      let newData = JSON.parse(JSON.stringify(this.state.data));
-      let newContactData = { [this.state.newContact]: [] };
+      const newData = JSON.parse(JSON.stringify(this.state.data));
+      const newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
       this.sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
     }
