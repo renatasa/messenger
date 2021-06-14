@@ -19,13 +19,13 @@ import { constants } from "./constants";
 export class Messenger extends Component {
   // different css is applied for different type of error
   state = {
-    data: null,
+    data: [],
     selectedChat: 0,
     newMessage: "",
     newContact: "",
-    errorLoadingChats: null,
-    errorSendingMessage: null,
-    errorAddingContact: null,
+    errorLoadingChats: "",
+    errorSendingMessage: "",
+    errorAddingContact: "",
     showSidebar: true,
   };
 
@@ -39,7 +39,7 @@ export class Messenger extends Component {
     if (
       this.props.email !== null &&
       this.props.password !== null &&
-      this.state.data
+      this.state.data.length>0
     ) {
       this.scrollToBottom();
     }
@@ -51,13 +51,13 @@ export class Messenger extends Component {
     } else if (clearInput === constants.doNotClearInput) {
       this.setState({
         data: newData,
-        [error]: null,
+        [error]: "",
       });
     } else {
       this.setState({
         data: newData,
         [clearInput]: constants.emptyString,
-        [error]: null,
+        [error]: "",
       });
     }
   };
@@ -73,7 +73,7 @@ export class Messenger extends Component {
   };
 
   resetError = (errorType) => {
-    this.setState({ [errorType]: null });
+    this.setState({ [errorType]: "" });
   };
 
   showSidebarFunction = () => {
@@ -90,7 +90,7 @@ export class Messenger extends Component {
 
   // on mobile devices only mobile responsive navbar is shown (using css property display : none)
   chatApp = () => {
-    if (this.state.data !== null) {
+    if (this.state.data.length >0) {
       return (
         <div className={classes.chatComponent}>
           <div
