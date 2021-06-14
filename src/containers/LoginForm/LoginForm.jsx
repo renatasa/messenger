@@ -10,7 +10,7 @@ export class LoginForm extends Component {
     email: "",
     password: "",
     isValid: false,
-    error: null,
+    error: "",
   };
 
   inputChangedHandler = (event, inputName) => {
@@ -42,7 +42,7 @@ export class LoginForm extends Component {
   };
 
   resetError = () => {
-    this.setState({ error: null });
+    this.setState({ error: "" });
   };
 
   redirectToMessenger = () => {

@@ -5,7 +5,7 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 export const errorMessage = (props) => {
   let error = null;
-  if (props.error) {
+  if (props.error.length>0) {
     error = props.error;
   }
 

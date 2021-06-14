@@ -8,7 +8,7 @@ export const chatsDataGetRequest = (checkRequestStatusUpdateState) => {
     },
   };
   return axios
-    .get('https://api.jsonbin.io/b/60c70d9898ca6c704eaf60d0z', useHeaders)
+    .get(process.env.REACT_APP_GET_CHATS, useHeaders)
     .then((response) => {
       const dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
 
