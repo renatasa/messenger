@@ -11,6 +11,8 @@ import {
   createMessagingSection,
   createErrorMessage,
   createSpinner,
+  addNewContact,
+  sendMessage,
 } from "./service";
 import { constants } from "./constants";
 
@@ -173,38 +175,6 @@ export class Messenger extends Component {
     this.setState({ [inputName]: event.target.value });
   };
 
-  sendMessage = () => {
-    if (this.state.newMessage && !this.state.errorSendingMessage) {
-      const newMessageObj = {
-        messageText: this.state.newMessage,
-        author: constants.mesAsAuthorOfMessage,
-      };
-
-      const newData = JSON.parse(JSON.stringify(this.state.data));
-      const contactName = Object.keys(this.state.data[this.state.selectedChat]);
-      newData[this.state.selectedChat][contactName].push(newMessageObj);
-
-      this.sendPutRequest(
-        newData,
-        constants.newMessage,
-        constants.errorSendingMessage
-      );
-    }
-  };
-
-  addNewContact = () => {
-    if (this.state.newContact !== constants.emptyString) {
-      const newData = JSON.parse(JSON.stringify(this.state.data));
-      const newContactData = { [this.state.newContact]: [] };
-      newData.splice(0, 0, newContactData);
-      this.sendPutRequest(
-        newData,
-        constants.newContact,
-        constants.errorAddingContact
-      );
-    }
-  };
-
   resetError = (errorType) => {
     this.setState({ [errorType]: null });
   };
@@ -243,7 +213,13 @@ export class Messenger extends Component {
               selectedChat={this.state.selectedChat}
               inputChangedHandler={this.inputChangedHandler}
               newContact={this.state.newContact}
-              addNewContact={this.addNewContact}
+              addNewContact={() =>
+                addNewContact(
+                  this.state.newContact,
+                  this.state.data,
+                  this.sendPutRequest
+                )
+              }
               errorAddingContact={this.state.errorAddingContact}
               resetError={this.resetError}
               errorType={constants.errorAddingContact}
@@ -283,7 +259,15 @@ export class Messenger extends Component {
               inputChangedHandler={(event) =>
                 this.inputChangedHandler(event, constants.newMessage)
               }
-              sendMessage={this.sendMessage}
+              sendMessage={() =>
+                sendMessage(
+                  this.state.newMessage,
+                  this.state.errorSendingMessage,
+                  this.state.data,
+                  this.state.selectedChat,
+                  this.sendPutRequest
+                )
+              }
               newMessage={this.state.newMessage}
             />
           </div>

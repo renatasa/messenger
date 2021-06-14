@@ -2,6 +2,7 @@ import Message from "../../components/Message/Message";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import { constants } from "./constants";
 import classes from "./Messenger.module.css";
 
 export const createMessagingSection = (data, selectedChat) => {
@@ -44,4 +45,36 @@ export const createSpinner = (data, errorLoadingChats) => {
   }
 };
 
+export const sendMessage = (
+  newMessage,
+  errorSendingMessage,
+  data,
+  selectedChat,
+  sendPutRequest
+) => {
+  if (newMessage && !errorSendingMessage) {
+    const newMessageObj = {
+      messageText: newMessage,
+      author: constants.meAsAuthorOfMessage,
+    };
 
+    const newData = JSON.parse(JSON.stringify(data));
+    const contactName = Object.keys(data[selectedChat]);
+    newData[selectedChat][contactName].push(newMessageObj);
+    console.log("service file");
+    sendPutRequest(
+      newData,
+      constants.newMessage,
+      constants.errorSendingMessage
+    );
+  }
+};
+
+export const addNewContact = (newContact, data, sendPutRequest) => {
+  if (newContact !== constants.emptyString) {
+    const newData = JSON.parse(JSON.stringify(data));
+    const newContactData = { [newContact]: [] };
+    newData.splice(0, 0, newContactData);
+    sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
+  }
+};
