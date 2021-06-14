@@ -14,7 +14,7 @@ import {
   sendMessage,
   redirectToLogin
 } from "./service";
-import { chatsDataGetRequest } from "../api/messengerApi";
+import { chatsDataGetRequest, sendPutRequest } from "../api/messengerApi";
 import { constants } from "./constants";
 
 export class Messenger extends Component {
@@ -41,42 +41,42 @@ export class Messenger extends Component {
     showSidebar: true,
   };
 
-  sendPutRequest = (newData, clearInput, updateError) => {
-    const newDataObj = {
-      data: newData,
-    };
+  // sendPutRequest = (newData, clearInput, updateError) => {
+  //   const newDataObj = {
+  //     data: newData,
+  //   };
 
-    const newDataJson = JSON.stringify(newDataObj);
+  //   const newDataJson = JSON.stringify(newDataObj);
 
-    const useHeaders = {
-      headers: {
-        "secret-key": process.env.REACT_APP_API_KEY,
-        "Content-Type": "application/json",
-        versioning: "false",
-      },
-    };
+  //   const useHeaders = {
+  //     headers: {
+  //       "secret-key": process.env.REACT_APP_API_KEY,
+  //       "Content-Type": "application/json",
+  //       versioning: "false",
+  //     },
+  //   };
 
-    axios
-      .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
-      .then((response) => {
-        this.checkRequestStatusUpdateState(
-          response,
-          newData,
-          updateError,
-          clearInput
-        );
-      })
+  //   axios
+  //     .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
+  //     .then((response) => {
+  //       this.checkRequestStatusUpdateState(
+  //         response,
+  //         newData,
+  //         updateError,
+  //         clearInput
+  //       );
+  //     })
 
-      .catch((error) => {
-        console.log(error);
-        this.checkRequestStatusUpdateState(
-          error.response,
-          null,
-          updateError,
-          clearInput
-        );
-      });
-  };
+  //     .catch((error) => {
+  //       console.log(error);
+  //       this.checkRequestStatusUpdateState(
+  //         error.response,
+  //         null,
+  //         updateError,
+  //         clearInput
+  //       );
+  //     });
+  // };
 
   // this.sendContinuousRequestsUpdateChats function is used for updating this.state.data
   // and chat UI if there are any new messages sent by other users. It is set to execute every 2s.
@@ -190,7 +190,8 @@ export class Messenger extends Component {
                 addNewContact(
                   this.state.newContact,
                   this.state.data,
-                  this.sendPutRequest
+                  sendPutRequest, 
+                  this.checkRequestStatusUpdateState
                 )
               }
               errorAddingContact={this.state.errorAddingContact}
@@ -238,7 +239,8 @@ export class Messenger extends Component {
                   this.state.errorSendingMessage,
                   this.state.data,
                   this.state.selectedChat,
-                  this.sendPutRequest
+                  sendPutRequest, 
+                  this.checkRequestStatusUpdateState
                 )
               }
               newMessage={this.state.newMessage}

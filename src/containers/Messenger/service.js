@@ -51,7 +51,8 @@ export const sendMessage = (
   errorSendingMessage,
   data,
   selectedChat,
-  sendPutRequest
+  sendPutRequest,
+  checkRequestStatusUpdateState
 ) => {
   if (newMessage && !errorSendingMessage) {
     const newMessageObj = {
@@ -66,17 +67,18 @@ export const sendMessage = (
     sendPutRequest(
       newData,
       constants.newMessage,
-      constants.errorSendingMessage
+      constants.errorSendingMessage, 
+      checkRequestStatusUpdateState
     );
   }
 };
 
-export const addNewContact = (newContact, data, sendPutRequest) => {
+export const addNewContact = (newContact, data, sendPutRequest, checkRequestStatusUpdateState) => {
   if (newContact !== constants.emptyString) {
     const newData = JSON.parse(JSON.stringify(data));
     const newContactData = { [newContact]: [] };
     newData.splice(0, 0, newContactData);
-    sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
+    sendPutRequest(newData, constants.newContact, constants.errorAddingContact, checkRequestStatusUpdateState);
   }
 };
 

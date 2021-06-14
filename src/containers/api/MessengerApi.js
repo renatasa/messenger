@@ -7,7 +7,7 @@ export const chatsDataGetRequest = (checkRequestStatusUpdateState) => {
       "secret-key": process.env.REACT_APP_API_KEY,
     },
   };
-  axios
+  return axios
     .get(process.env.REACT_APP_GET_CHATS, useHeaders)
     .then((response) => {
       const dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
@@ -25,6 +25,42 @@ export const chatsDataGetRequest = (checkRequestStatusUpdateState) => {
         null,
         constants.errorLoadingChats,
         constants.doNotClearInput
+      );
+    });
+};
+
+export const sendPutRequest = (
+  newData,
+  clearInput,
+  updateError,
+  checkRequestStatusUpdateState
+) => {
+  const newDataObj = {
+    data: newData,
+  };
+
+  const newDataJson = JSON.stringify(newDataObj);
+
+  const useHeaders = {
+    headers: {
+      "secret-key": process.env.REACT_APP_API_KEY,
+      "Content-Type": "application/json",
+      versioning: "false",
+    },
+  };
+
+  return axios
+    .put(process.env.REACT_APP_GET_CHATS, newDataJson, useHeaders)
+    .then((response) => {
+      checkRequestStatusUpdateState(response, newData, updateError, clearInput);
+    })
+
+    .catch((error) => {
+      checkRequestStatusUpdateState(
+        error.response,
+        null,
+        updateError,
+        clearInput
       );
     });
 };
