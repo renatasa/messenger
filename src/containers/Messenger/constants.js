@@ -5,7 +5,7 @@ export const constants = {
   errorAddingContact: "errorAddingContact",
   newMessage: "newMessage",
   newContact: "newContact",
-  mesAsAuthorOfMessage: "me",
+  meAsAuthorOfMessage: "me",
   navigateToMyProfile: "/myProfile",
   navigateToHome: "/",
   emptyString: "",
