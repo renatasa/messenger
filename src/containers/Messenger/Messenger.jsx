@@ -4,7 +4,6 @@ import InputField from "../../components/UI/ChatInputField/ChatInputField";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Navbar from "../../components/Navbar/Navbar";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import classes from "./Messenger.module.css";
 import {
@@ -15,6 +14,7 @@ import {
   sendMessage,
   redirectToLogin
 } from "./service";
+import { chatsDataGetRequest } from "../api/messengerApi";
 import { constants } from "./constants";
 
 export class Messenger extends Component {
@@ -39,34 +39,6 @@ export class Messenger extends Component {
     errorSendingMessage: null,
     errorAddingContact: null,
     showSidebar: true,
-  };
-
-  chatsDataGetRequest = () => {
-    const useHeaders = {
-      headers: {
-        "secret-key": process.env.REACT_APP_API_KEY,
-      },
-    };
-    axios
-      .get(process.env.REACT_APP_GET_CHATS, useHeaders)
-      .then((response) => {
-        const dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
-
-        this.checkRequestStatusUpdateState(
-          response,
-          dataUpdated,
-          constants.errorLoadingChats,
-          constants.doNotClearInput
-        );
-      })
-      .catch((error) => {
-        this.checkRequestStatusUpdateState(
-          error.response,
-          null,
-          constants.errorLoadingChats,
-          constants.doNotClearInput
-        );
-      });
   };
 
   sendPutRequest = (newData, clearInput, updateError) => {
@@ -113,7 +85,7 @@ export class Messenger extends Component {
   // to prevent exceeding amount of free requests of JSONbin.io
   componentDidMount() {
     if (this.props.email !== null && this.props.password !== null) {
-      this.chatsDataGetRequest();
+      chatsDataGetRequest(this.checkRequestStatusUpdateState);
     }
     //  this.sendContinuousRequestsUpdateChats = setInterval(() => {
     //   this.chatsDataGetRequest();
