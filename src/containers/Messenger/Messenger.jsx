@@ -13,6 +13,7 @@ import {
   createSpinner,
   addNewContact,
   sendMessage,
+  redirectToLogin
 } from "./service";
 import { constants } from "./constants";
 
@@ -289,15 +290,10 @@ export class Messenger extends Component {
     );
   };
 
-  redirectToLogin = () => {
-    if (!this.props.email || !this.props.password) {
-      return <Redirect to={constants.navigateToHome} />;
-    }
-  };
   render() {
     return (
       <div>
-        {this.redirectToLogin()}
+        {redirectToLogin(this.props.email, this.props.password)}
         {this.chatApp()}
         {createErrorMessage(this.state.errorLoadingChats)}
         {createSpinner(this.state.data, this.state.errorLoadingChats)}

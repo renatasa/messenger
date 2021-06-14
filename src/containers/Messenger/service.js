@@ -2,6 +2,7 @@ import Message from "../../components/Message/Message";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import Spinner from "../../components/Spinner/Spinner";
 import Navbar from "../../components/Navbar/Navbar";
+import { Redirect } from "react-router-dom";
 import { constants } from "./constants";
 import classes from "./Messenger.module.css";
 
@@ -76,5 +77,11 @@ export const addNewContact = (newContact, data, sendPutRequest) => {
     const newContactData = { [newContact]: [] };
     newData.splice(0, 0, newContactData);
     sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
+  }
+};
+
+export const redirectToLogin = (email, password) => {
+  if (!email || !password) {
+    return <Redirect to={constants.navigateToHome} />;
   }
 };
