@@ -1,22 +1,9 @@
 import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import Navbar from "../../components/Navbar/Navbar";
-import ProfileDetails from "../../components/UI/ProfileDetails/ProfileDetails";
 import { redirectToLogin, createMyProfileDetails } from "./service";
 import { constants } from "./constants";
 import classes from "./MyProfile.module.css";
-
-// const constants = {
-//   fullName: "Full Name",
-//   phoneNumber: "Phone Number",
-//   location: "Location",
-//   education: "Eucation",
-//   jobs: "Jobs",
-//   isNotValid: false,
-//   navigateToHome: "/",
-//   navigateToMessenger: "/messenger",
-// };
 
 // third element in each nested array indicates if length of second element is too large and if true, then shows error message
 const mockProfileDetails = [
@@ -53,25 +40,6 @@ export class MyProfile extends Component {
     }
   };
 
-  redirectToLogin = () => {
-    if (!this.props.email || !this.props.password) {
-      return <Redirect to={constants.navigateToHome} />;
-    }
-  };
-
-  createMyProfileDetails = () => {
-    return this.state.details.map((detail, index) => (
-      <ProfileDetails
-        label={detail[0]} // property name e.g. full name
-        details={detail[1]} // property value e.g. John Doe
-        inputChangedHandler={this.inputChangedHandler}
-        index={index}
-        error={detail[2]} // is property valid
-        key={index}
-      />
-    ));
-  };
-
   render() {
     return (
       <div>
@@ -86,7 +54,10 @@ export class MyProfile extends Component {
 
           <div className={classes.info}>
             <div className={classes.shortInfo}>
-              {createMyProfileDetails(this.state.details, this.inputChangedHandler)}
+              {createMyProfileDetails(
+                this.state.details,
+                this.inputChangedHandler
+              )}
             </div>
           </div>
         </div>
