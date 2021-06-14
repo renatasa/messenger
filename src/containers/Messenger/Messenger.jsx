@@ -11,8 +11,8 @@ import {
   createSpinner,
   addNewContact,
   sendMessage,
-  redirectToLogin,
 } from "./service";
+import {redirectTo} from "../utils/serviceUtils";
 import { chatsDataGetRequest, sendPutRequest } from "../api/messengerApi";
 import { constants } from "./constants";
 
@@ -189,7 +189,7 @@ export class Messenger extends Component {
   render() {
     return (
       <div>
-        {redirectToLogin(this.props.email, this.props.password)}
+        {redirectTo(this.props.email, this.props.password, constants.navigateToHome)}
         {this.chatApp()}
         {createErrorMessage(this.state.errorLoadingChats)}
         {createSpinner(this.state.data, this.state.errorLoadingChats)}

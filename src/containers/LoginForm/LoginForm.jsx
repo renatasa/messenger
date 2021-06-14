@@ -5,8 +5,6 @@ import handleUserKeyPress from "../../components/Utilities/UtilityFunction";
 import * as actions from "../../store/actions/index";
 import { connect } from "react-redux";
 import classes from "./LoginForm.module.css";
-import { redirectToLogin } from "../Messenger/service";
-
 export class LoginForm extends Component {
   state = {
     email: "",
@@ -28,6 +26,7 @@ export class LoginForm extends Component {
     }
 
     if (isValid) {
+      this.props.onSetEmailPassword(this.state.email, this.state.password);
       this.setState({ isValid: isValid });
     } else {
       this.setState({
@@ -48,7 +47,7 @@ export class LoginForm extends Component {
 
   redirectToMessenger = () => {
     if (this.state.isValid) {
-      this.props.onSetEmailPassword(this.state.email, this.state.password);
+      //  this.props.onSetEmailPassword(this.state.email, this.state.password);
       return <Redirect to={"/messenger"} />;
     }
   };

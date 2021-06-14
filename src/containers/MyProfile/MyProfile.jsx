@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Navbar from "../../components/Navbar/Navbar";
-import { redirectToLogin, createMyProfileDetails } from "./service";
+import { createMyProfileDetails } from "./service";
+import {redirectTo} from "../utils/serviceUtils";
 import { constants } from "./constants";
 import classes from "./MyProfile.module.css";
 
@@ -43,7 +44,7 @@ export class MyProfile extends Component {
   render() {
     return (
       <div>
-        {redirectToLogin(this.props.email, this.props.password)}
+        {redirectTo(this.props.email, this.props.password, constants.navigateToHome)}
         <Navbar navigateTo={constants.navigateToMessenger} />
 
         <div className={classes.myProfile}>

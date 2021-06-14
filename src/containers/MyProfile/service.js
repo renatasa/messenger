@@ -1,13 +1,4 @@
-
-  import { Redirect } from "react-router-dom";
-  import ProfileDetails from "../../components/UI/ProfileDetails/ProfileDetails";
-  import  {constants} from "./constants";
-  
-  export const redirectToLogin = (email, password) => {
-    if (!email || !password) {
-      return <Redirect to={constants.navigateToHome} />;
-    }
-  };
+import ProfileDetails from "../../components/UI/ProfileDetails/ProfileDetails";
 
   export const createMyProfileDetails = (details, inputChangedHandler) => {
     return details.map((detail, index) => (
