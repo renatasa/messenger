@@ -12,20 +12,7 @@ import {
   createErrorMessage,
   createSpinner,
 } from "./service";
-
-const constants={
-  errorSendingMessage: "errorSendingMessage",
-  errorLoadingChats: "errorLoadingChats",
-  doNotClearInput:"do not clear input", 
-  errorAddingContact :"errorAddingContact", 
-  newMessage: "newMessage", 
-  newContact:"newContact",
-  mesAsAuthorOfMessage: "me",
-  navigateToMyProfile: "/myProfile",
-  navigateToHome: "/",
-  emptyString: "", 
-  emptyArray: []
-}
+import { constants } from "./constants";
 
 export class Messenger extends Component {
   // data - chatting data that is received from backend
@@ -60,7 +47,6 @@ export class Messenger extends Component {
     axios
       .get(process.env.REACT_APP_GET_CHATS, useHeaders)
       .then((response) => {
-        
         const dataUpdated = JSON.parse(JSON.stringify(response.data["data"]));
 
         this.checkRequestStatusUpdateState(
@@ -187,7 +173,6 @@ export class Messenger extends Component {
     this.setState({ [inputName]: event.target.value });
   };
 
-  //checks if this.state.newMessage is not empty, sends HTTP reqiest, updates backend and UI
   sendMessage = () => {
     if (this.state.newMessage && !this.state.errorSendingMessage) {
       const newMessageObj = {
@@ -199,17 +184,24 @@ export class Messenger extends Component {
       const contactName = Object.keys(this.state.data[this.state.selectedChat]);
       newData[this.state.selectedChat][contactName].push(newMessageObj);
 
-      this.sendPutRequest(newData, constants.newMessage, constants.errorSendingMessage);
+      this.sendPutRequest(
+        newData,
+        constants.newMessage,
+        constants.errorSendingMessage
+      );
     }
   };
 
-  //checks if this.state.newContact is not empty, updates backend and UI
   addNewContact = () => {
     if (this.state.newContact !== constants.emptyString) {
       const newData = JSON.parse(JSON.stringify(this.state.data));
       const newContactData = { [this.state.newContact]: [] };
       newData.splice(0, 0, newContactData);
-      this.sendPutRequest(newData, constants.newContact, constants.errorAddingContact);
+      this.sendPutRequest(
+        newData,
+        constants.newContact,
+        constants.errorAddingContact
+      );
     }
   };
 
@@ -233,69 +225,71 @@ export class Messenger extends Component {
 
   // on mobile devices only mobile responsive navbar is shown (using css property display : none)
   chatApp = () => {
-    if (this.state.data !== null){
-    return (
-      <div className={classes.chatComponent}>
-        <div
-          className={
-            this.state.showSidebar
-              ? `${classes.sidebar} ${classes.sidebarPhoneDisplay}`
-              : `${classes.sidebar} ${classes.sidebarPhoneNone}`
-          }
-        >
-          {this.mobileResponsiveNavbar()}
-
-          <Sidebar
-            data={this.state.data}
-            selectChat={this.selectChat}
-            selectedChat={this.state.selectedChat}
-            inputChangedHandler={this.inputChangedHandler}
-            newContact={this.state.newContact}
-            addNewContact={this.addNewContact}
-            errorAddingContact={this.state.errorAddingContact}
-            resetError={this.resetError}
-            errorType={constants.errorAddingContact}
-          />
-        </div>
-        <div
-          className={
-            this.state.showSidebar
-              ? `${classes.messagingSection} ${classes.messagingSectionPhoneNone}`
-              : `${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`
-          }
-        >
-          <Navbar
-            navigateTo={constants.navigateToMyProfile}
-            chatWith={Object.keys(this.state.data[this.state.selectedChat])[0]}
-            showSidebarProperty={this.state.showSidebar}
-            showSidebarFunction={this.showSidebarFunction}
-          />
-          <div className={classes.messagingSectionMessages}>
-            {createMessagingSection(this.state.data, this.state.selectedChat)}
-            <div
-              ref={(el) => {
-                this.messagesEnd = el;
-              }}
-            >
-              {" "}
-            </div>
-          </div>
-          <ErrorMessage
-            error={this.state.errorSendingMessage}
-            resetError={this.resetError}
-            errorType={constants.errorSendingMessage}
-          />
-          <InputField
-            inputChangedHandler={(event) =>
-              this.inputChangedHandler(event, constants.newMessage)
+    if (this.state.data !== null) {
+      return (
+        <div className={classes.chatComponent}>
+          <div
+            className={
+              this.state.showSidebar
+                ? `${classes.sidebar} ${classes.sidebarPhoneDisplay}`
+                : `${classes.sidebar} ${classes.sidebarPhoneNone}`
             }
-            sendMessage={this.sendMessage}
-            newMessage={this.state.newMessage}
-          />
+          >
+            {this.mobileResponsiveNavbar()}
+
+            <Sidebar
+              data={this.state.data}
+              selectChat={this.selectChat}
+              selectedChat={this.state.selectedChat}
+              inputChangedHandler={this.inputChangedHandler}
+              newContact={this.state.newContact}
+              addNewContact={this.addNewContact}
+              errorAddingContact={this.state.errorAddingContact}
+              resetError={this.resetError}
+              errorType={constants.errorAddingContact}
+            />
+          </div>
+          <div
+            className={
+              this.state.showSidebar
+                ? `${classes.messagingSection} ${classes.messagingSectionPhoneNone}`
+                : `${classes.messagingSection} ${classes.messagingSectionPhoneDisplay}`
+            }
+          >
+            <Navbar
+              navigateTo={constants.navigateToMyProfile}
+              chatWith={
+                Object.keys(this.state.data[this.state.selectedChat])[0]
+              }
+              showSidebarProperty={this.state.showSidebar}
+              showSidebarFunction={this.showSidebarFunction}
+            />
+            <div className={classes.messagingSectionMessages}>
+              {createMessagingSection(this.state.data, this.state.selectedChat)}
+              <div
+                ref={(el) => {
+                  this.messagesEnd = el;
+                }}
+              >
+                {" "}
+              </div>
+            </div>
+            <ErrorMessage
+              error={this.state.errorSendingMessage}
+              resetError={this.resetError}
+              errorType={constants.errorSendingMessage}
+            />
+            <InputField
+              inputChangedHandler={(event) =>
+                this.inputChangedHandler(event, constants.newMessage)
+              }
+              sendMessage={this.sendMessage}
+              newMessage={this.state.newMessage}
+            />
+          </div>
         </div>
-      </div>
-    );
-          }
+      );
+    }
   };
 
   mobileResponsiveNavbar = () => {
@@ -311,11 +305,11 @@ export class Messenger extends Component {
     );
   };
 
-  redirectToLogin=()=>{
+  redirectToLogin = () => {
     if (!this.props.email || !this.props.password) {
-     return <Redirect to={constants.navigateToHome} />;
+      return <Redirect to={constants.navigateToHome} />;
     }
-  }
+  };
   render() {
     return (
       <div>
