@@ -7,7 +7,7 @@ import classes from "./Messenger.module.css";
 
 export const createMessagingSection = (data, selectedChat) => {
   const messagingSection = [];
-  if (data !== null) {
+  if (data.length>0) {
     const chat = [...Object.values(data[selectedChat])[0]];
     chat.map((chatItem, index) =>
       messagingSection.push(
@@ -28,7 +28,6 @@ export const createErrorMessage = (errorLoadingChats) => {
       <div>
         <Navbar navigateTo={"/myProfile"} showSidebarProperty={true} />
         <div className={classes.loadingChatsError}>
-          {" "}
           <ErrorMessage
             error={errorLoadingChats}
             errorType={"errorLoadingChats"}
@@ -40,7 +39,7 @@ export const createErrorMessage = (errorLoadingChats) => {
 };
 
 export const createSpinner = (data, errorLoadingChats) => {
-  if (data === null && !errorLoadingChats) {
+  if (data.length===0 && !errorLoadingChats) {
     return <Spinner />;
   }
 };
@@ -62,7 +61,6 @@ export const sendMessage = (
     const newData = JSON.parse(JSON.stringify(data));
     const contactName = Object.keys(data[selectedChat]);
     newData[selectedChat][contactName].push(newMessageObj);
-    console.log("service file");
     sendPutRequest(
       newData,
       constants.newMessage,
